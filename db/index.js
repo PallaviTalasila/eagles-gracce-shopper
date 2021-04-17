@@ -34,7 +34,19 @@ async function createProduct({ title, description, price, quantity }) {
 }
 
 async function getAllProducts() {
-  const query = `select * from products;`;
+  const query = `WITH P AS
+  (SELECT *
+    FROM PRODUCTS),
+R AS
+  (SELECT *
+    FROM REVIEWS)
+SELECT P.TITLE,
+P.DESCRIPTION,
+P.PRICE,
+P.QUANTITY,
+R.REVIEWTEXT
+FROM P
+LEFT JOIN R ON (P.ID = R.PRODUCTID);`;
 
   try {
     const { rows } = await client.query(query);
@@ -192,7 +204,6 @@ async function getOrdersByUser(userid) {
 
 async function editOrder(id, productid, quantity) {
   try {
-    
     /*Update Quantity on the order/cart*/
 
     const {
@@ -267,5 +278,5 @@ module.exports = {
   deleteProducts,
   editOrder,
   deleteOrder,
-  getOrdersByUser
+  getOrdersByUser,
 };
