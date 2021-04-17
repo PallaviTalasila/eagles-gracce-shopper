@@ -33,6 +33,111 @@ async function createProduct({ title, description, price, quantity }) {
   }
 }
 
+async function getAllProducts() {
+  const query = `select * from products;`;
+
+  try {
+    const { rows } = await client.query(query);
+
+    return rows;
+  } catch (error) {
+    throw error;
+  }
+}
+
+async function editProducts({ id, title, description, price, quantity }) {
+  try {
+    /*Update title of a prodcut*/
+    if (title) {
+      const {
+        rows: [product],
+      } = await client.query(
+        `
+          UPDATE products
+          SET title = $2
+          WHERE id=$1
+          RETURNING *;
+      `,
+        [id, title]
+      );
+    }
+
+    /*Update description*/
+
+    if (description) {
+      const {
+        rows: [product],
+      } = await client.query(
+        `
+            UPDATE products
+            SET description =$2
+            WHERE id=$1
+            RETURNING *;
+        `,
+        [id, description]
+      );
+    }
+
+    /*Update price*/
+
+    if (price) {
+      const {
+        rows: [product],
+      } = await client.query(
+        `
+            UPDATE products
+            SET price =$2
+            WHERE id=$1
+            RETURNING *;
+        `,
+        [id, price]
+      );
+    }
+
+    /*Update Quantity*/
+
+    if (quantity) {
+      const {
+        rows: [product],
+      } = await client.query(
+        `
+            UPDATE products
+            SET quantity =$2
+            WHERE id=$1
+            RETURNING *;
+        `,
+        [id, quantity]
+      );
+    }
+
+    return product;
+  } catch (error) {
+    throw error;
+  }
+}
+
+async function deleteProducts(id) {
+  try {
+    /* Delete a prodcut */
+    if (id) {
+      const {
+        rows: [product],
+      } = await client.query(
+        `
+          Delete products        
+          WHERE id=$1
+          RETURNING *;
+      `,
+        [id]
+      );
+    }
+
+    return product;
+  } catch (error) {
+    throw error;
+  }
+}
+
 /**********************************User Methods************************/
 
 async function createUser({ username, password, email }) {
@@ -71,6 +176,66 @@ async function createOrder({ userid, productid, price, quantity }) {
   }
 }
 
+async function getOrdersByUser(userid) {
+  const query = `select * from orders where userid=1`;
+  const values = [userid];
+
+  try {
+    const {
+      rows: [order],
+    } = await client.query(query, values);
+    return order;
+  } catch (error) {
+    throw error;
+  }
+}
+
+async function editOrder(id, productid, quantity) {
+  try {
+    
+    /*Update Quantity on the order/cart*/
+
+    const {
+      rows: [order],
+    } = await client.query(
+      `
+            UPDATE orders
+            SET quantity =$3
+            WHERE id=$1
+            and productid=$2
+            RETURNING *;
+        `,
+      [id, prodcutid, quantity]
+    );
+
+    return order;
+  } catch (error) {
+    throw error;
+  }
+}
+
+async function deleteOrder(id, productid) {
+  try {
+    /*delete product from order/cart*/
+
+    const {
+      rows: [order],
+    } = await client.query(
+      `
+            delete orders            
+            WHERE id=$1
+            and productid=$2
+            RETURNING *;
+        `,
+      [id, prodcutid]
+    );
+
+    return order;
+  } catch (error) {
+    throw error;
+  }
+}
+
 /**********************************Review Methods************************/
 
 async function createReview({ userid, productid, reviewtext }) {
@@ -97,4 +262,10 @@ module.exports = {
   createUser,
   createOrder,
   createReview,
+  getAllProducts,
+  editProducts,
+  deleteProducts,
+  editOrder,
+  deleteOrder,
+  getOrdersByUser
 };
