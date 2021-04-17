@@ -1,14 +1,19 @@
 const apiRouter = require("express").Router();
+// MVP = Most Viable Product
+
+// COMPARE & PULL REQUEST, THEN PULL REQUEST, THEN POST TO EAGLES LETTING PEOPLE KNOW
 
 const {
-  // getLinks,
-  // updateLinkAndTagByLinkId,
-  // createLinkAndTag,
-  // getLinksByTagName,
   createProduct,
   createUser,
   createOrder,
   createReview,
+  getAllProducts,
+  editProducts,
+  deleteProducts,
+  editOrder,
+  deleteOrder,
+  getOrdersByUser
 } = require("../db");
 
 apiRouter.get("/", (req, res, next) => {
@@ -22,7 +27,7 @@ apiRouter.get("/", (req, res, next) => {
 apiRouter.post("/products", async (req, res, next) => {
   try {
     const { title, description, price, quantity } = req.body;
-    postProduct = await createProduct({ title, description, price, quantity });
+    const postProduct = await createProduct({ title, description, price, quantity });
     res.send(postProduct);
   } catch (error) {
     next(error);
@@ -33,7 +38,7 @@ apiRouter.post("/products", async (req, res, next) => {
 apiRouter.post("/users/register", async (req, res, next) => {
   try {
     const { username, password, email } = req.body;
-    postUser = await createUser({ username, password, email  });
+    const postUser = await createUser({ username, password, email  });
     res.send(postUser);
   } catch (error) {
     next(error);
@@ -44,7 +49,7 @@ apiRouter.post("/users/register", async (req, res, next) => {
 apiRouter.post("/orders", async (req, res, next) => {
   try {
     const { userid, productid, price, quantity } = req.body;
-    postOrder = await createOrder({ userid, productid, price, quantity });
+    const postOrder = await createOrder({ userid, productid, price, quantity });
     res.send(postOrder);
   } catch (error) {
     next(error)
@@ -54,7 +59,7 @@ apiRouter.post("/orders", async (req, res, next) => {
 apiRouter.post("/reviews", async (req, res, next) => {
   try {
     const { userid, productid, reviewtext } = req.body;
-    postReview = await createReview({ userid, productid, reviewtext });
+    const postReview = await createReview({ userid, productid, reviewtext });
     res.send(postReview);
   } catch (error) {
     next(error)
@@ -67,30 +72,22 @@ apiRouter.post("/reviews", async (req, res, next) => {
 
 apiRouter.get("/products", async (req, res, next) => {
   try {
-    const getProducts = await getProducts();
+    const getProducts = await getAllProducts();
     res.send(getProducts);
   } catch (error) {
     next(error);
   }
 });
 
-apiRouter.get("/users", async (req, res, next) => {
-  try {
-    const getUsers = await getUsers();
-    res.send(getUsers);
-  } catch (error) {
-    next(error);
-  }
-});
+// apiRouter.get("/users", async (req, res, next) => {
+//   try {
+//     const getUsers = await getUsers();
+//     res.send(getUsers);
+//   } catch (error) {
+//     next(error);
+//   }
+// });      No DB GET USER method yet
 
-apiRouter.get("/orders", async (req, res, next) => {
-  try {
-    const getOrders = await getOrders();
-    res.send(getOrders);
-  } catch (error) {
-    next(error);
-  }
-});
 
 apiRouter.get("/reviews", async (req, res, next) => {
   try {
@@ -103,49 +100,70 @@ apiRouter.get("/reviews", async (req, res, next) => {
 
 /***************************GET BY ID ****************************/
 
-apiRouter.get("/order/:orderName/orders", async (req, res, next) => {
+apiRouter.get("/orders/:orderName", async (req, res, next) => {
   try {
-    const { tagName } = req.params;
+    const { userid } = req.params;
 
-    const linksByTagName = await getLinksByTagName(tagName);
-    res.send(linksByTagName);
+    const ordersByUser = await getOrdersByUser(userid);
+    res.send(ordersByUser);
   } catch (error) {
     next(error);
   }
 });
 
-/**
- * 
-POST /api/links (creates tags during link creation)
- */
+/********************************PATCH(UPDATE) METHODS *****************/
 
-apiRouter.post("/links", async (req, res, next) => {
-  try {
-    const { link, comment, tag } = req.body;
-    linkAndTag = await createLinkAndTag({ link, comment, tag });
-    res.send(linkAndTag);
-  } catch (error) {
-    next(error);
-  }
-});
-
-/**
- * 
-PATCH /api/links/:id (used both to update comment/tags as well as to increment the click count)
- */
-
-apiRouter.patch("/links/:id", async (req, res, next) => {
+apiRouter.patch("/products/update/:id", async (req, res, next) => {
   try {
     const { id } = req.params;
-    const { comment, tag, addToCount } = req.body;
+    const { title, description, price, quantity } = req.body;
 
-    updateLinkAndTag = await updateLinkAndTagByLinkId({
-      id,
-      comment,
-      tag,
-      addToCount,
+    updateProduct = await editProducts({
+      id, 
+      title, 
+      description, 
+      price, 
+      quantity
     });
-    res.send(updateLinkAndTag);
+    res.send(updateProduct);
+  } catch (error) {
+    next(error);
+  }
+});
+
+apiRouter.patch("/orders/update/:id", async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const { productid, quantity } = req.body;
+
+    const updateOrder = await editOrder({id, productid, quantity});
+    res.send(updateOrder);
+  } catch (error) {
+    next(error);
+  }
+});
+
+
+
+/**************************** DESTROY METHODS *************************/
+
+apiRouter.delete("/products/delete/:id", async (req, res, next) => {
+  try {
+    const { id } = req.params;
+
+    const deleteProduct = await deleteProducts({ id });
+    res.send(deleteProduct);
+  } catch (error) {
+    next(error);
+  }
+});
+
+apiRouter.delete("/orders/delete/:id", async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const { productid } = req.body;
+    const deleteOrder = await deleteOrder({ id, productid });
+    res.send(deleteOrder);
   } catch (error) {
     next(error);
   }
