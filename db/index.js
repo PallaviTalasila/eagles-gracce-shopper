@@ -71,7 +71,7 @@ async function editProducts({ id, title, description, price, quantity }) {
           RETURNING *;
       `,
         [id, title]
-      );
+      ); // does this need a return statement?
     }
 
     /*Update description*/
@@ -130,7 +130,7 @@ async function editProducts({ id, title, description, price, quantity }) {
 
 async function deleteProducts(id) {
   try {
-    /* Delete a prodcut */
+    /* Delete a product */
     if (id) {
       const {
         rows: [product],
@@ -216,7 +216,7 @@ async function editOrder(id, productid, quantity) {
             and productid=$2
             RETURNING *;
         `,
-      [id, prodcutid, quantity]
+      [id, productid, quantity]
     );
 
     return order;
@@ -238,7 +238,7 @@ async function deleteOrder(id, productid) {
             and productid=$2
             RETURNING *;
         `,
-      [id, prodcutid]
+      [id, productid]
     );
 
     return order;
