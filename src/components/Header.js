@@ -7,6 +7,9 @@ import Button from '@material-ui/core/Button';
 import ShoppingCartIcon from '@material-ui/icons/ShoppingCart';
 import StorefrontIcon from '@material-ui/icons/Storefront';
 import LockIcon from '@material-ui/icons/Lock';
+import { Link } from 'react-router-dom';
+// import Logo from './imgs/Logo.svg';
+// import IconButton from '@material-ui/core/IconButton';
 
 
 
@@ -28,21 +31,36 @@ function Header() {
         <div className={classes.root}>
             <AppBar position="static" style={{color:'#26F0F1', backgroundColor:'#5F5B6B'}}>
                 <Toolbar>
-                
-                <Typography variant="h6" className={classes.title}>
-                    Grace Shopper
-                </Typography>
+                {/* <IconButton>        Need to edit the image to make it transparent
+                <img src ={Logo} alt='logo' style={{backgroundSize:'50px'}}/>
+                </IconButton> */}
+               
+               <h1 style={{flexGrow:'1'}}>Grace Shopper</h1>
+
+                <Link to="/products" style={{ textDecoration: 'none', color:'#26F0F1' }}>
                 <Button 
                     color="inherit"
                     endIcon={<StorefrontIcon />}
-                    >Products</Button>
+                    >Products
+                </Button>
+                </Link>
+
+                <Link to="/cart" style={{ textDecoration: 'none', color:'#26F0F1' }}>
                 <Button
                     color="inherit"
                     endIcon={<ShoppingCartIcon />}
-                    >Cart</Button>
+                    >Cart
+                </Button>
+                </Link>
+
+                <Link to="/login" style={{ textDecoration: 'none', color:'#26F0F1' }}>
                 <Button 
                 color="inherit"
-                endIcon={<LockIcon />}>Login</Button>
+                
+                endIcon={<LockIcon />}>Login
+                </Button>
+                </Link>
+                
                 </Toolbar>
             </AppBar>
 
