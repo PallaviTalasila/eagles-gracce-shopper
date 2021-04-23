@@ -152,18 +152,58 @@ async function deleteProducts(id) {
 
 /**********************************User Methods************************/
 
+function hashPassword(password) {
+  return bcrypt.hashSync(password, bcrypt.genSaltSync(10));
+}
+
+function comparePassword(hashPassword, password) {
+  return bcrypt.compareSync(password, hashPassword);
+}
+
 async function createUser({ username, password, email }) {
+  const hash = hashPassword(password);
   const query = `INSERT INTO
       users(username, password,email)
       VALUES($1, $2,$3)
       returning *`;
-  const values = [username, password, email];
+  const values = [username, hash, email];
 
   try {
     const {
       rows: [user],
     } = await client.query(query, values);
     return user;
+  } catch (error) {
+    throw error;
+  }
+}
+
+async function getUserByUsername(username) {
+  const query = `SELECT * FROM users WHERE username=$1`;
+  const values = [username];
+  try {
+    const {
+      rows: [user],
+    } = await client.query(query, values);
+    return user;
+  } catch (error) {
+    throw error;
+  }
+}
+
+async function getUser({ username, password }) {
+  const query = `SELECT id,username,password FROM users WHERE username = $1;`;
+  const values = [username];
+
+  try {
+    const {
+      rows: [user],
+    } = await client.query(query, values);
+
+    if (comparePassword(user.password, password)) {
+      delete user.password;
+      return user;
+    } else return false;
   } catch (error) {
     throw error;
   }
@@ -279,4 +319,6 @@ module.exports = {
   editOrder,
   deleteOrder,
   getOrdersByUser,
+  getUserByUsername,
+  getUser
 };

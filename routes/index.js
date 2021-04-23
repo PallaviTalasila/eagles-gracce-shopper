@@ -13,7 +13,9 @@ const {
   deleteProducts,
   editOrder,
   deleteOrder,
-  getOrdersByUser
+  getOrdersByUser,
+  getUserByUsername,
+  getUser,
 } = require("../db");
 
 apiRouter.get("/", (req, res, next) => {
@@ -22,53 +24,71 @@ apiRouter.get("/", (req, res, next) => {
   });
 });
 
-/************************* CREATE METHODS **********************************/
+/************************* USER ROUTES **********************************/
 
-apiRouter.post("/products", async (req, res, next) => {
-  try {
-    const { title, description, price, quantity } = req.body;
-    const postProduct = await createProduct({ title, description, price, quantity });
-    res.send(postProduct);
-  } catch (error) {
-    next(error);
-  }
-}); // The price takes a numerical value, It needs to have a dollar sign by it
-// i don't know if we should do that on the front end or backend
 
-apiRouter.post("/users/register", async (req, res, next) => {
+
+apiRouter.post("/register", async (req, res, next) => {
   try {
     const { username, password, email } = req.body;
-    const postUser = await createUser({ username, password, email  });
+    const userExists = await getUserByUsername(username);
+
+    if (userExists) {
+      res.status(401);
+      return next({
+        name: "UserExistsError",
+        message: "A user by that username already exists",
+      });
+    } else if (password.length < 8) {
+      res.status(401);
+      return next({
+        name: "InvalidPassword",
+        message: "All passwords to be atleast 8 characters long",
+      });
+    }
+    const postUser = await createUser({ username, password, email });
     res.send(postUser);
   } catch (error) {
     next(error);
   }
 });
 
+apiRouter.post("/login", async (req, res, next) => {
+  const { username, password } = req.body;
 
-apiRouter.post("/orders", async (req, res, next) => {
+  // request must have both
+  if (!username || !password) {
+    next({
+      name: "MissingCredentialsError",
+      message: "Please supply both a username and password",
+    });
+  }
+
   try {
-    const { userid, productid, price, quantity } = req.body;
-    const postOrder = await createOrder({ userid, productid, price, quantity });
-    res.send(postOrder);
+    const user = await getUser({ username, password });
+
+    if (user) {
+      // // create token & return to user
+      // const token = jwt.sign(
+      //   { id: user.id, username: user.username },
+      //   process.env.JWT_SECRET
+      // );
+
+      res.send({ message: "you're logged in!" });
+    } else {
+      next({
+        name: "IncorrectCredentialsError",
+        message: "Username or password is incorrect",
+      });
+    }
   } catch (error) {
-    next(error)
+    console.log(error);
+    next(error);
   }
 });
 
-apiRouter.post("/reviews", async (req, res, next) => {
-  try {
-    const { userid, productid, reviewtext } = req.body;
-    const postReview = await createReview({ userid, productid, reviewtext });
-    res.send(postReview);
-  } catch (error) {
-    next(error)
-  }
-});
 
-/************************************ GET METHODS *******************************/ 
-
-
+/***************************PRODUCT ROUTES***********************/
 
 apiRouter.get("/products", async (req, res, next) => {
   try {
@@ -79,51 +99,34 @@ apiRouter.get("/products", async (req, res, next) => {
   }
 });
 
-// apiRouter.get("/users", async (req, res, next) => {
-//   try {
-//     const getUsers = await getUsers();
-//     res.send(getUsers);
-//   } catch (error) {
-//     next(error);
-//   }
-// });      No DB GET USER method yet
 
-
-apiRouter.get("/reviews", async (req, res, next) => {
+apiRouter.post("/products", async (req, res, next) => {
   try {
-    const getReviews = await getReviews();
-    res.send(getReviews);
+    const { title, description, price, quantity } = req.body;
+    const postProduct = await createProduct({
+      title,
+      description,
+      price,
+      quantity,
+    });
+    res.send(postProduct);
   } catch (error) {
     next(error);
   }
-});
+}); 
 
-/***************************GET BY ID ****************************/
 
-apiRouter.get("/orders/:orderName", async (req, res, next) => {
-  try {
-    const { userid } = req.params;
-
-    const ordersByUser = await getOrdersByUser(userid);
-    res.send(ordersByUser);
-  } catch (error) {
-    next(error);
-  }
-});
-
-/********************************PATCH(UPDATE) METHODS *****************/
-
-apiRouter.patch("/products/update/:id", async (req, res, next) => {
+apiRouter.patch("/products/:id", async (req, res, next) => {
   try {
     const { id } = req.params;
     const { title, description, price, quantity } = req.body;
 
     updateProduct = await editProducts({
-      id, 
-      title, 
-      description, 
-      price, 
-      quantity
+      id,
+      title,
+      description,
+      price,
+      quantity,
     });
     res.send(updateProduct);
   } catch (error) {
@@ -131,23 +134,8 @@ apiRouter.patch("/products/update/:id", async (req, res, next) => {
   }
 });
 
-apiRouter.patch("/orders/update/:id", async (req, res, next) => {
-  try {
-    const { id } = req.params;
-    const { productid, quantity } = req.body;
 
-    const updateOrder = await editOrder({id, productid, quantity});
-    res.send(updateOrder);
-  } catch (error) {
-    next(error);
-  }
-});
-
-
-
-/**************************** DESTROY METHODS *************************/
-
-apiRouter.delete("/products/delete/:id", async (req, res, next) => {
+apiRouter.delete("/products/:id", async (req, res, next) => {
   try {
     const { id } = req.params;
 
@@ -158,12 +146,70 @@ apiRouter.delete("/products/delete/:id", async (req, res, next) => {
   }
 });
 
-apiRouter.delete("/orders/delete/:id", async (req, res, next) => {
+/***************************ORDERS***********************/
+
+apiRouter.get("/orders/:userName", async (req, res, next) => {
+  try {
+    const { userid } = req.params;
+
+    const ordersByUser = await getOrdersByUser(userid);
+    res.send(ordersByUser);
+  } catch (error) {
+    next(error);
+  }
+});
+
+apiRouter.post("/orders", async (req, res, next) => {
+  try {
+    const { userid, productid, price, quantity } = req.body;
+    const postOrder = await createOrder({ userid, productid, price, quantity });
+    res.send(postOrder);
+  } catch (error) {
+    next(error);
+  }
+});
+
+
+apiRouter.patch("/orders/:id", async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const { productid, quantity } = req.body;
+
+    const updateOrder = await editOrder({ id, productid, quantity });
+    res.send(updateOrder);
+  } catch (error) {
+    next(error);
+  }
+});
+
+apiRouter.delete("/orders/:id", async (req, res, next) => {
   try {
     const { id } = req.params;
     const { productid } = req.body;
-    const deleteOrder = await deleteOrder({ id, productid });
-    res.send(deleteOrder);
+    const deletedOrder = await deleteOrder({ id, productid });
+    res.send(deletedOrder);
+  } catch (error) {
+    next(error);
+  }
+});
+
+
+/***************************REVIEWS***********************/
+
+apiRouter.get("/reviews", async (req, res, next) => {
+  try {
+    const getReviews = await getReviews();
+    res.send(getReviews);
+  } catch (error) {
+    next(error);
+  }
+});
+
+apiRouter.post("/reviews", async (req, res, next) => {
+  try {
+    const { userid, productid, reviewtext } = req.body;
+    const postReview = await createReview({ userid, productid, reviewtext });
+    res.send(postReview);
   } catch (error) {
     next(error);
   }
