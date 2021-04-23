@@ -34,7 +34,19 @@ async function createProduct({ title, description, price, quantity }) {
 }
 
 async function getAllProducts() {
-  const query = `select * from products;`;
+  const query = `WITH P AS
+  (SELECT *
+    FROM PRODUCTS),
+R AS
+  (SELECT *
+    FROM REVIEWS)
+SELECT P.TITLE,
+P.DESCRIPTION,
+P.PRICE,
+P.QUANTITY,
+R.REVIEWTEXT
+FROM P
+LEFT JOIN R ON (P.ID = R.PRODUCTID);`;
 
   try {
     const { rows } = await client.query(query);
@@ -140,18 +152,58 @@ async function deleteProducts(id) {
 
 /**********************************User Methods************************/
 
+function hashPassword(password) {
+  return bcrypt.hashSync(password, bcrypt.genSaltSync(10));
+}
+
+function comparePassword(hashPassword, password) {
+  return bcrypt.compareSync(password, hashPassword);
+}
+
 async function createUser({ username, password, email }) {
+  const hash = hashPassword(password);
   const query = `INSERT INTO
       users(username, password,email)
       VALUES($1, $2,$3)
       returning *`;
-  const values = [username, password, email];
+  const values = [username, hash, email];
 
   try {
     const {
       rows: [user],
     } = await client.query(query, values);
     return user;
+  } catch (error) {
+    throw error;
+  }
+}
+
+async function getUserByUsername(username) {
+  const query = `SELECT * FROM users WHERE username=$1`;
+  const values = [username];
+  try {
+    const {
+      rows: [user],
+    } = await client.query(query, values);
+    return user;
+  } catch (error) {
+    throw error;
+  }
+}
+
+async function getUser({ username, password }) {
+  const query = `SELECT id,username,password FROM users WHERE username = $1;`;
+  const values = [username];
+
+  try {
+    const {
+      rows: [user],
+    } = await client.query(query, values);
+
+    if (comparePassword(user.password, password)) {
+      delete user.password;
+      return user;
+    } else return false;
   } catch (error) {
     throw error;
   }
@@ -192,7 +244,6 @@ async function getOrdersByUser(userid) {
 
 async function editOrder(id, productid, quantity) {
   try {
-    
     /*Update Quantity on the order/cart*/
 
     const {
@@ -267,5 +318,7 @@ module.exports = {
   deleteProducts,
   editOrder,
   deleteOrder,
-  getOrdersByUser
+  getOrdersByUser,
+  getUserByUsername,
+  getUser
 };
