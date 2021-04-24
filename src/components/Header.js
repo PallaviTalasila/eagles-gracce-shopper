@@ -9,7 +9,7 @@ import StorefrontIcon from '@material-ui/icons/Storefront';
 import LockIcon from '@material-ui/icons/Lock';
 import { Link } from 'react-router-dom';
 // import Logo from './imgs/Logo.svg';
-// import IconButton from '@material-ui/core/IconButton';
+import IconButton from '@material-ui/core/IconButton';
 
 
 
@@ -22,6 +22,11 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+
+function Logo() {
+  return <img style={{ background: 'transparent', height: 50, width: 50}} src='/imgs/GraceShopperLogo.png' />;
+}
+
 function Header() {
 
     const classes = useStyles();
@@ -31,9 +36,12 @@ function Header() {
         <div className={classes.root}>
             <AppBar position="static" style={{color:'#26F0F1', backgroundColor:'#5F5B6B'}}>
                 <Toolbar>
-                {/* <IconButton>        Need to edit the image to make it transparent
-                <img src ={Logo} alt='logo' style={{backgroundSize:'50px'}}/>
-                </IconButton> */}
+                
+                <Link to = '/products'>
+                <IconButton>        
+                <Logo />
+                </IconButton>
+                </Link>
                
                <h1 style={{flexGrow:'1'}}>Grace Shopper</h1>
 

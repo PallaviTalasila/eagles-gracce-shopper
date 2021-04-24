@@ -11,6 +11,7 @@ const App = () => {
   const loginKey = localStorage.getItem(`Token`);
   const userNameKey = localStorage.getItem(`Username`);
   const [username, setUsername] = useState(userNameKey ? userNameKey : "");
+  const [email, setEmail] = useState("")
   const [password, setPassword] = useState("");
   const [userToken, setUserToken] = useState(loginKey ? loginKey : false);
   const [loggedIn, setLoggedIn] = useState(loginKey ? true : false);
@@ -50,7 +51,18 @@ const App = () => {
           </Route>
 
           <Route exact path="/register">
-            <Register/>
+            <Register
+            username={username}
+            setUsername={setUsername}
+            password={password}
+            setPassword={setPassword}
+            userToken={userToken}
+            setUserToken={setUserToken}
+            loggedIn={loggedIn}
+            setLoggedIn={setLoggedIn}
+            setEmail={setEmail}
+            email={email}
+            />
           </Route>
 
           <Route exact path="/createproduct"> {/* Will change this to /:productid/create*/}
