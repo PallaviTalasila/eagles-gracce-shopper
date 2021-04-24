@@ -4,6 +4,7 @@ import { getAllProducts } from "../api";
 // import { getAllLinks } from "../api";
 import { Header, Products, Login, Register } from "../components";
 import './App.css';
+import Cart from "./Cart";
 
 const App = () => {
   const [products, setProducts] = useState([]);
@@ -67,6 +68,10 @@ const App = () => {
 
           <Route exact path="/createproduct"> {/* Will change this to /:productid/create*/}
             <Register/>
+          </Route>
+
+          <Route exact path="/cart"> {/* Will change this to /:productid/create*/}
+            <Cart/>
           </Route>
 
         </Switch>
