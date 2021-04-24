@@ -2,8 +2,8 @@ import React, { useState, useEffect } from "react";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import { getAllProducts } from "../api";
 // import { getAllLinks } from "../api";
-import { Header, Products, Login, Register } from "../components";
-import './App.css';
+import { Header, Products, Login, Register ,OrderHistory} from "../components";
+import "./App.css";
 
 const App = () => {
   const [products, setProducts] = useState([]);
@@ -28,35 +28,49 @@ const App = () => {
   return (
     <div className="app">
       <Router>
-        <Header/>
+        <Header
+          setUsername={setUsername}
+          setPassword={setPassword}
+          loggedIn={loggedIn}
+          setLoggedIn={setLoggedIn}
+        />
         <Switch>
           <Route exact path="/products">
-            <Products
-             products={products}
-             setProducts={setProducts} />
+            <Products products={products} setProducts={setProducts} />
           </Route>
-
-          <Route exact path="/login">
+          <Route path="/login">
             <Login
-             username={username}
-             setUsername={setUsername}
-             password={password}
-             setPassword={setPassword}
-             userToken={userToken}
-             setUserToken={setUserToken}
-             loggedIn={loggedIn}
-             setLoggedIn={setLoggedIn}
-             />
+              username={username}
+              setUsername={setUsername}
+              password={password}
+              setPassword={setPassword}
+              userToken={userToken}
+              setUserToken={setUserToken}
+              loggedIn={loggedIn}
+              setLoggedIn={setLoggedIn}
+            />
           </Route>
-
           <Route exact path="/register">
-            <Register/>
+            <Register />
           </Route>
-
-          <Route exact path="/createproduct"> {/* Will change this to /:productid/create*/}
-            <Register/>
+          <Route exact path="/myOrders">
+            <OrderHistory
+              username={username}
+              setUsername={setUsername}
+              password={password}
+              setPassword={setPassword}
+              userToken={userToken}
+              setUserToken={setUserToken}
+              loggedIn={loggedIn}
+              setLoggedIn={setLoggedIn}
+            />
           </Route>
-
+          )
+          <Route exact path="/createproduct">
+            {" "}
+            {/* Will change this to /:productid/create*/}
+            <Register />
+          </Route>
         </Switch>
       </Router>
     </div>

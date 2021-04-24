@@ -34,7 +34,7 @@ apiRouter.post("/register", async (req, res, next) => {
     const userExists = await getUserByUsername(username);
 
     if (userExists) {
-      res.status(401);
+     // res.status(401);
       return next({
         name: "UserExistsError",
         message: "A user by that username already exists",
