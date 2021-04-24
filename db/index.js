@@ -1,6 +1,7 @@
 // Connect to DB
 const { Client } = require("pg");
 const DB_NAME = "grace-shopper";
+const bcrypt = require('bcrypt');
 //const DB_URL =   process.env.DATABASE_URL || `postgres://localhost:5432/${DB_NAME}`;
 //for heroku1
 const client = new Client({
@@ -163,7 +164,7 @@ function comparePassword(hashPassword, password) {
 async function createUser({ username, password, email }) {
   const hash = hashPassword(password);
   const query = `INSERT INTO
-      users(username, password,email)
+      users(username, password, email)
       VALUES($1, $2,$3)
       returning *`;
   const values = [username, hash, email];

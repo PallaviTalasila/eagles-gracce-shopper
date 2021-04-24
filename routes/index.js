@@ -1,4 +1,8 @@
 const apiRouter = require("express").Router();
+const { JWT_SECRET } = process.env;
+const jwt = require('jsonwebtoken');
+
+
 // MVP = Most Viable Product
 
 // COMPARE & PULL REQUEST, THEN PULL REQUEST, THEN POST TO EAGLES LETTING PEOPLE KNOW
@@ -66,15 +70,15 @@ apiRouter.post("/login", async (req, res, next) => {
 
   try {
     const user = await getUser({ username, password });
-
+    console.log(JWT_SECRET);
     if (user) {
-      // // create token & return to user
-      // const token = jwt.sign(
-      //   { id: user.id, username: user.username },
-      //   process.env.JWT_SECRET
-      // );
+      
+      const token = jwt.sign(
+        { id: user.id, username: user.username },
+       JWT_SECRET
+      );
 
-      res.send({ message: "you're logged in!" });
+      res.send({ message: "Login Successful!", token });
     } else {
       next({
         name: "IncorrectCredentialsError",
