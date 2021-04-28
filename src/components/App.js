@@ -1,9 +1,18 @@
 import React, { useState, useEffect } from "react";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
-import { getAllProducts } from "../api";
 import { Header, Products, Login, Register, OrderHistory } from "../components";
 import "./App.css";
 
+/* Need More specified alerts, like if there is no user registered. 
+   Also need to get the IMGS Renderings
+   And the Quantity Working on the Database end
+   Make the remove from cart only render on the specified product
+   Pop up a modal with all the reviewtexts 
+   Fonts for certain html tags staying default
+   change description to only use one line
+   Add to Cart will store the OrderId on local storage
+   Create Review
+    */
 const App = () => {
   const [products, setProducts] = useState([]);
   const loginKey = localStorage.getItem(`Token`);
@@ -13,6 +22,7 @@ const App = () => {
   const [password, setPassword] = useState("");
   const [userToken, setUserToken] = useState(loginKey ? loginKey : false);
   const [loggedIn, setLoggedIn] = useState(loginKey ? true : false);
+  const [count, setCount] = React.useState(0);
 
   return (
     <div className="app">
@@ -65,6 +75,8 @@ const App = () => {
                 {...props}
                 products={products}
                 setProducts={setProducts}
+                count={count}
+                setCount={setCount}
               />
             )}
           />

@@ -7,13 +7,13 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
 import Link from '@material-ui/core/Link';
 import Paper from '@material-ui/core/Paper';
-import Box from '@material-ui/core/Box';
 import Grid from '@material-ui/core/Grid';
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import swal from "sweetalert";
 import { register } from '../api';
+import { Redirect } from "react-router-dom/cjs/react-router-dom.min";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -61,6 +61,7 @@ const Register = ({
   setEmail
 }) => {
   const classes = useStyles();
+  const [shouldRedirect, setRedirect] = useState(false);
 
   const [passwordConfirmation, setPasswordConfirmation] = useState("");
 
@@ -77,30 +78,28 @@ const Register = ({
     event.preventDefault();
     try {
       const data = await register(username, password, email);
-      const token = data.token;
+      const newUsername = data.username;
 
-      swal('are you a promise?').then(() => console.log('Yes'))
-
-      if (token) {
-        // localStorage.setItem(`Token`, token);
-        // setUserToken(token);
-        setLoggedIn(true);
-        setUsername(username);
+      if (newUsername) {
+        
         // localStorage.setItem(`Username`, username);
-        swal('Successfully Registered');
+        swal("Successfully Registered!").then(() => {
+          setRedirect(true);
+        });
         setUsername("");
         setPassword("");
-        setPasswordConfirmation("");
-        history.push("/");
+        // history.push("/");
       } else {
-        throw new Error('Something went wrong') // display an error message on the front end 
+        swal("Registration Failed, Please Try Again") // display an error message on the front end
       }
     } catch (error) {
       console.error(error);
     }
   };
 
-  return (
+   return shouldRedirect ? (
+    <Redirect push to="/login" />
+  ) : (
     <Grid container component="main" className={classes.root}>
       <CssBaseline />
       <Grid item xs={false} sm={4} md={7} className={classes.image} />
