@@ -1,4 +1,4 @@
-import React from 'react'
+import React ,{useEffect}from 'react'
 import { makeStyles } from '@material-ui/core/styles';
 import Card from '@material-ui/core/Card';
 import CardActions from '@material-ui/core/CardActions';
@@ -8,7 +8,7 @@ import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 import ShoppingCartIcon from '@material-ui/icons/ShoppingCart';
 import placeholderimg from './imgs/placeholderimg.png'
-import { editOrder } from '../api';
+import { editOrder,getAllProducts } from '../api';
 import Modal from '@material-ui/core/Modal';
 import Backdrop from '@material-ui/core/Backdrop';
 import Fade from '@material-ui/core/Fade';
@@ -40,9 +40,19 @@ const useStyles = makeStyles((theme) => ({
   }));
 
 
-function Products({products, count, setCount}) {
+function Products({products, count, setCount,setProducts}) {
 console.log(products)
     const classes = useStyles();
+
+    useEffect(() => {
+      try {
+        Promise.all([getAllProducts()]).then(([data]) => {
+          setProducts(data);
+        });
+      } catch (error) {
+        console.log(error);
+      }
+    }, []);
     
     const [open, setOpen] = React.useState(false);
 
@@ -73,19 +83,34 @@ console.log(products)
                 <CardContent>
 
                 <Typography gutterBottom variant="h5" component="h2">
-                {product.title}
+                  {product.title}
                 </Typography>
 
-                <Typography variant="body2" color="textSecondary" variant='h5' component="h5">
-                {product.description}
+                <Typography
+                  variant="body2"
+                  color="textSecondary"
+                  variant="h5"
+                  component="h5"
+                >
+                  {product.description}
                 </Typography>
 
-                <Typography variant="body2" color="textPrimary" variant='h5' component="h5">
-                ${product.price}
+                <Typography
+                  variant="body2"
+                  color="textPrimary"
+                  variant="h5"
+                  component="h5"
+                >
+                  ${product.price}
                 </Typography>
 
-                <Typography variant="body2" color="textPrimary" variant='h6' component="h6">
-                Quantity : {product.quantity}
+                <Typography
+                  variant="body2"
+                  color="textPrimary"
+                  variant="h6"
+                  component="h6"
+                >
+                  Quantity : {product.quantity}
                 </Typography>
 
                 </CardContent>
@@ -98,7 +123,7 @@ console.log(products)
                 type="button"
                 onClick={handleOpen}>
                 Reviews
-                </Button>
+              </Button>
 
                 <Modal
                 className={classes.modal}
@@ -149,13 +174,11 @@ console.log(products)
                 </Button> : null}
 
             </CardActions>
-
-        </Card>
-        )}    
-        </div>
-
-        </div>
-    )
+          </Card>
+        )}
+      </div>
+    </div>
+  );
 }
 // ********************************** ADD A NOTIFICATION TO THE CART ICON **************************//
-export default Products
+export default Products;

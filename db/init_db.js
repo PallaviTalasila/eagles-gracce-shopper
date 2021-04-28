@@ -17,7 +17,8 @@ async function buildTables() {
     DROP TABLE IF EXISTS REVIEWS;
     DROP TABLE IF EXISTS ORDERS;
     DROP TABLE IF EXISTS USERS;
-    DROP TABLE IF EXISTS PRODUCTS;   
+    DROP TABLE IF EXISTS PRODUCTS; 
+    DROP SEQUENCE ORDER_ID_SEQ;  
   `);
     console.log("Finished dropping tables!");
 
@@ -39,12 +40,15 @@ async function buildTables() {
       PASSWORD VARCHAR(255) NOT NULL,
       EMAIL VARCHAR(255) UNIQUE NOT NULL);    
     
-    CREATE TABLE ORDERS (
+    CREATE TABLE ORDERS (      
       ID SERIAL PRIMARY KEY,
       USERID INTEGER REFERENCES USERS(ID),
       PRODUCTID INTEGER REFERENCES PRODUCTS(ID) NOT NULL,
+      ORDERID INTEGER NOT NULL,
       PRICE decimal, 
       QUANTITY integer);    
+
+    CREATE SEQUENCE order_id_seq;
     
     CREATE TABLE REVIEWS (
         USERID INTEGER REFERENCES USERS(ID) NOT NULL,
@@ -172,18 +176,42 @@ async function populateInitialData() {
       {
         userid: 1,
         productid: 1,
+        orderid:2000,
         price: 100,
         quantity: 2,
       },
       {
         userid: 2,
         productid: 2,
+        orderid:2001,
         price: 100,
         quantity: 2,
       },
       {
         userid: 3,
         productid: 3,
+        orderid:2001,
+        price: 19.99,
+        quantity: 2,
+      },
+      {
+        userid: 3,
+        productid: 2,
+        orderid:2001,
+        price: 124.99,
+        quantity: 1,
+      },
+      {
+        userid: 3,
+        productid: 1,
+        orderid:2001,
+        price: 10,
+        quantity: 2,
+      },
+      {
+        userid: 3,
+        productid: 3,
+        orderid:2001,
         price: 19.99,
         quantity: 2,
       },

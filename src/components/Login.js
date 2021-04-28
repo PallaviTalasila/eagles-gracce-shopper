@@ -69,18 +69,19 @@ const Login = ({
 
       if (token) {
         localStorage.setItem(`Token`, token);
-        // setUserToken(token);
+        setUserToken(token);
         setLoggedIn(true);
         setUsername(username);
-        // localStorage.setItem(`Username`, username);
-        swal("Successfully Logged In!").then(() => {
+        localStorage.setItem(`Username`, username);
+        swal("Successfully Logged In").then(() => {
           setRedirect(true);
         });
+
+        history.push("/");
+      } else {
         setUsername("");
         setPassword("");
-        // history.push("/");
-      } else {
-        swal("Login Failed, Please Try Again") // display an error message on the front end
+        throw new Error("Something went wrong"); // display an error message on the front end
       }
     } catch (error) {
       console.error(error);
