@@ -1,15 +1,15 @@
 import React from "react";
-import { makeStyles } from "@material-ui/core/styles";
+import { makeStyles, withStyles } from "@material-ui/core/styles";
 import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
-import Typography from "@material-ui/core/Typography";
 import Button from "@material-ui/core/Button";
 import ShoppingCartIcon from "@material-ui/icons/ShoppingCart";
 import StorefrontIcon from "@material-ui/icons/Storefront";
 import LockIcon from "@material-ui/icons/Lock";
-import { Link } from "react-router-dom";
-// import Logo from './imgs/Logo.svg';
+import { Link, useHistory } from "react-router-dom";
 import IconButton from "@material-ui/core/IconButton";
+import ExitToAppIcon from "@material-ui/icons/ExitToApp";
+import Badge from "@material-ui/core/Badge";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -19,18 +19,27 @@ const useStyles = makeStyles((theme) => ({
     flexGrow: 1,
   },
 }));
-
-function Logo() {
-  return (
-    <img
-      style={{ background: "transparent", height: 50, width: 50 }}
-      src="/imgs/GraceShopperLogo.png"
-    />
-  );
-}
+const StyledBadge = withStyles((theme) => ({
+  badge: {
+    right: -3,
+    top: 8,
+    border: `2px solid #26F0F1`,
+    padding: "0 4px",
+  },
+}))(Badge);
 
 function Header({ setUsername, setPassword, loggedIn, setLoggedIn }) {
+  const history = useHistory();
   const classes = useStyles();
+  const handleClick = (event) => {
+    event.preventDefault();
+    localStorage.removeItem(`Token`);
+    localStorage.removeItem(`Username`);
+    setLoggedIn(false);
+    setUsername("");
+    setPassword("");
+    history.push("/products");
+  };
 
   return (
     <div className={classes.root}>
@@ -41,11 +50,14 @@ function Header({ setUsername, setPassword, loggedIn, setLoggedIn }) {
         <Toolbar>
           <Link to="/products">
             <IconButton>
-              <Logo />
+              <img
+                style={{ background: "transparent", height: 50, width: 50 }}
+                src="/imgs/GraceShopperLogoNew.png"
+                alt=""
+              />
+              ;
             </IconButton>
           </Link>
-
-          <h1 style={{ flexGrow: "1" }}>Grace Shopper</h1>
 
           <h1 style={{ flexGrow: "1" }}>Grace Shopper</h1>
 
@@ -58,25 +70,40 @@ function Header({ setUsername, setPassword, loggedIn, setLoggedIn }) {
             </Button>
           </Link>
 
+          {!loggedIn ? null : (
+            <Link
+              className={classes.linkColor}
+              style={{ textDecoration: "none", color: "#26F0F1" }}
+              to="/myOrders"
+            >
+              <Button color="inherit">My Orders</Button>
+            </Link>
+          )}
+
           <Link to="/cart" style={{ textDecoration: "none", color: "#26F0F1" }}>
             <Button color="inherit" endIcon={<ShoppingCartIcon />}>
               Cart
             </Button>
           </Link>
 
-          <Link
-            to="/login"
-            style={{ textDecoration: "none", color: "#26F0F1" }}
-          >
-            <Button color="inherit" endIcon={<LockIcon />}>
-              Login
-            </Button>
-          </Link>
-
-          {!loggedIn ? null : (
-            <Link className={classes.linkColor} to="/myOrders">
-              <Button color="inherit">My Orders</Button>
+          {loggedIn ? null : (
+            <Link
+              to="/login"
+              style={{ textDecoration: "none", color: "#26F0F1" }}
+            >
+              <Button color="inherit" endIcon={<LockIcon />}>
+                Login
+              </Button>
             </Link>
+          )}
+          {!loggedIn ? null : (
+            <Button
+              color="inherit"
+              endIcon={<ExitToAppIcon />}
+              onClick={handleClick}
+            >
+              Logout
+            </Button>
           )}
         </Toolbar>
       </AppBar>

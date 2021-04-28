@@ -1,7 +1,7 @@
 const apiRouter = require("express").Router();
 const { JWT_SECRET } = process.env;
-const jwt = require('jsonwebtoken');
-
+const { ContactsOutlined } = require("@material-ui/icons");
+const jwt = require("jsonwebtoken");
 
 // MVP = Most Viable Product
 
@@ -20,6 +20,7 @@ const {
   getOrdersByUser,
   getUserByUsername,
   getUser,
+  generateorderseq,
 } = require("../db");
 
 apiRouter.get("/", (req, res, next) => {
@@ -30,15 +31,13 @@ apiRouter.get("/", (req, res, next) => {
 
 /************************* USER ROUTES **********************************/
 
-
-
 apiRouter.post("/register", async (req, res, next) => {
   try {
     const { username, password, email } = req.body;
     const userExists = await getUserByUsername(username);
 
     if (userExists) {
-     // res.status(401);
+      // res.status(401);
       return next({
         name: "UserExistsError",
         message: "A user by that username already exists",
@@ -70,12 +69,11 @@ apiRouter.post("/login", async (req, res, next) => {
 
   try {
     const user = await getUser({ username, password });
-    console.log(JWT_SECRET);
+
     if (user) {
-      
       const token = jwt.sign(
         { id: user.id, username: user.username },
-       JWT_SECRET
+        JWT_SECRET
       );
 
       res.send({ message: "Login Successful!", token });
@@ -91,7 +89,6 @@ apiRouter.post("/login", async (req, res, next) => {
   }
 });
 
-
 /***************************PRODUCT ROUTES***********************/
 
 apiRouter.get("/products", async (req, res, next) => {
@@ -102,7 +99,6 @@ apiRouter.get("/products", async (req, res, next) => {
     next(error);
   }
 });
-
 
 apiRouter.post("/products", async (req, res, next) => {
   try {
@@ -117,8 +113,7 @@ apiRouter.post("/products", async (req, res, next) => {
   } catch (error) {
     next(error);
   }
-}); 
-
+});
 
 apiRouter.patch("/products/:id", async (req, res, next) => {
   try {
@@ -138,7 +133,6 @@ apiRouter.patch("/products/:id", async (req, res, next) => {
   }
 });
 
-
 apiRouter.delete("/products/:id", async (req, res, next) => {
   try {
     const { id } = req.params;
@@ -152,12 +146,14 @@ apiRouter.delete("/products/:id", async (req, res, next) => {
 
 /***************************ORDERS***********************/
 
-apiRouter.get("/orders/:userName", async (req, res, next) => {
+apiRouter.get("/orders/:username", async (req, res, next) => {
   try {
-    const { userid } = req.params;
-
-    const ordersByUser = await getOrdersByUser(userid);
-    res.send(ordersByUser);
+    const { username } = req.params;
+    const user = await getUserByUsername(username);
+    if (user) {
+      const ordersByUser = await getOrdersByUser(user.id);
+      res.send(ordersByUser);
+    }
   } catch (error) {
     next(error);
   }
@@ -165,14 +161,32 @@ apiRouter.get("/orders/:userName", async (req, res, next) => {
 
 apiRouter.post("/orders", async (req, res, next) => {
   try {
-    const { userid, productid, price, quantity } = req.body;
-    const postOrder = await createOrder({ userid, productid, price, quantity });
-    res.send(postOrder);
+    const { userid, productid, orderid, price, quantity } = req.body;
+
+    if (orderid) {
+      const postOrder = await createOrder({
+        userid,
+        productid,
+        orderid,
+        price,
+        quantity,
+      });
+      res.send(postOrder);
+    } else {
+      const genorderid = await generateorderseq();
+      const postOrder = await createOrder({
+        userid,
+        productid,
+        genorderid,
+        price,
+        quantity,
+      });
+      res.send(postOrder);
+    }
   } catch (error) {
     next(error);
   }
 });
-
 
 apiRouter.patch("/orders/:id", async (req, res, next) => {
   try {
@@ -196,7 +210,6 @@ apiRouter.delete("/orders/:id", async (req, res, next) => {
     next(error);
   }
 });
-
 
 /***************************REVIEWS***********************/
 
