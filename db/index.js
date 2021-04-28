@@ -1,7 +1,7 @@
 // Connect to DB
 const { Client } = require("pg");
 const DB_NAME = "grace-shopper";
-const bcrypt = require('bcrypt');
+const bcrypt = require("bcrypt");
 //const DB_URL =   process.env.DATABASE_URL || `postgres://localhost:5432/${DB_NAME}`;
 //for heroku1
 const client = new Client({
@@ -17,12 +17,12 @@ const client = new Client({
 
 /**********************************Product Methods************************/
 
-async function createProduct({ title, description, price, quantity }) {
+async function createProduct({ title, description, price, quantity, img }) {
   const query = `INSERT INTO
-      products(title, description,price,quantity)
-      VALUES($1, $2,$3,$4)
+      products(title, description,price,quantity, img)
+      VALUES($1, $2,$3,$4, $5)
       returning *`;
-  const values = [title, description, price, quantity];
+  const values = [title, description, price, quantity, img];
 
   try {
     const {
@@ -44,7 +44,9 @@ R AS
 SELECT P.TITLE,
 P.DESCRIPTION,
 P.PRICE,
+P.ID,
 P.QUANTITY,
+P.IMG,
 R.REVIEWTEXT
 FROM P
 LEFT JOIN R ON (P.ID = R.PRODUCTID);`;
@@ -212,12 +214,24 @@ async function getUser({ username, password }) {
 
 /**********************************Order Methods************************/
 
-async function createOrder({ userid, productid, price, quantity }) {
+async function generateorderseq() {
+  const query = `select nextval('order_id_seq')`;
+  try {
+    const {
+      rows: orderid,
+    } = await client.query(query);
+    return orderid;
+  } catch (error) {
+    throw error;
+  }
+}
+
+async function createOrder({ userid, productid, orderid, price, quantity }) {
   const query = `INSERT INTO
-      orders(userid, productid, price, quantity)
-      VALUES($1, $2,$3,$4)
+      orders(userid, productid,orderid, price, quantity)
+      VALUES($1, $2,$3,$4,$5)
       returning *`;
-  const values = [userid, productid, price, quantity];
+  const values = [userid, productid, orderid, price, quantity];
 
   try {
     const {
@@ -230,13 +244,11 @@ async function createOrder({ userid, productid, price, quantity }) {
 }
 
 async function getOrdersByUser(userid) {
-  const query = `select * from orders where userid=1`;
+  const query = `select * from orders where userid=$1`;
   const values = [userid];
 
   try {
-    const {
-      rows: [order],
-    } = await client.query(query, values);
+    const { rows: order } = await client.query(query, values);
     return order;
   } catch (error) {
     throw error;
@@ -321,5 +333,6 @@ module.exports = {
   deleteOrder,
   getOrdersByUser,
   getUserByUsername,
-  getUser
+  getUser,
+  generateorderseq
 };

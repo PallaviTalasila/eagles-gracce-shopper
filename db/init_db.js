@@ -17,7 +17,8 @@ async function buildTables() {
     DROP TABLE IF EXISTS REVIEWS;
     DROP TABLE IF EXISTS ORDERS;
     DROP TABLE IF EXISTS USERS;
-    DROP TABLE IF EXISTS PRODUCTS;   
+    DROP TABLE IF EXISTS PRODUCTS; 
+    DROP SEQUENCE IF EXISTS ORDER_ID_SEQ; 
   `);
     console.log("Finished dropping tables!");
 
@@ -29,7 +30,8 @@ async function buildTables() {
       ID SERIAL PRIMARY KEY,
       TITLE TEXT UNIQUE NOT NULL,
       DESCRIPTION VARCHAR(255),
-      PRICE DECIMAL, 
+      PRICE DECIMAL,
+      IMG VARCHAR(255),
       QUANTITY INTEGER);    
     
     CREATE TABLE USERS (
@@ -38,12 +40,15 @@ async function buildTables() {
       PASSWORD VARCHAR(255) NOT NULL,
       EMAIL VARCHAR(255) UNIQUE NOT NULL);    
     
-    CREATE TABLE ORDERS (
+    CREATE TABLE ORDERS (      
       ID SERIAL PRIMARY KEY,
       USERID INTEGER REFERENCES USERS(ID),
       PRODUCTID INTEGER REFERENCES PRODUCTS(ID) NOT NULL,
+      ORDERID INTEGER NOT NULL,
       PRICE decimal, 
       QUANTITY integer);    
+
+    CREATE SEQUENCE order_id_seq;
     
     CREATE TABLE REVIEWS (
         USERID INTEGER REFERENCES USERS(ID) NOT NULL,
@@ -65,52 +70,61 @@ async function populateInitialData() {
 
     const productsToCreate = [
       {
-        title: "Product1",
-        description: "product1 description",
-        price: 100,
-        quantity: 2,
+        title: "Bicycle",
+        description: "Nitrous not included",
+        price: 200,
+        quantity: 12,
+        img: "https://images.unsplash.com/photo-1485965120184-e220f721d03e?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80",
       },
       {
-        title: "Product2",
-        description: "product2 description",
-        price: 100,
-        quantity: 2,
+        title: "Laptop",
+        description: "Quad core flux capacitor included",
+        price: 2000,
+        quantity: 28,
+        img: "https://images.unsplash.com/photo-1602080858428-57174f9431cf?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1419&q=80",
       },
       {
-        title: "Product3",
-        description: "product3 description",
+        title: "Shoes",
+        description: "They may or may not make you run faster",
         price: 19.99,
-        quantity: 2,
+        quantity: 56,
+        img: "https://images.unsplash.com/photo-1460353581641-37baddab0fa2?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1351&q=80",
+        
       },
       {
-        title: "Product4",
-        description: "product4 description",
-        price: 100,
-        quantity: 2,
+        title: "Game of Thrones Last Season",
+        description: "I honestly wouldn't buy this",
+        price: 40,
+        quantity: 221,
+        img: "https://target.scene7.com/is/image/Target/GUEST_88847cb2-dcc5-4acb-8f77-4879e915d1ad?wid=488&hei=488&fmt=pjpeg",
       },
       {
-        title: "Product5",
-        description: "product5 description",
-        price: 100,
+        title: "Lamborghini Gallardo",
+        description: "Very Shiny",
+        price: 200000,
         quantity: 2,
+        img: "https://media.ed.edmunds-media.com/lamborghini/gallardo/2012/oem/2012_lamborghini_gallardo_convertible_lp-570-4-spyder-performante_fq_oem_1_815.jpg",
       },
       {
-        title: "Product6",
-        description: "product6 description",
-        price: 100,
-        quantity: 2,
+        title: "Bowl Of Soup",
+        description: "Pretty much edible",
+        price: 4,
+        quantity: 100,
+        img: "https://cdnimg.webstaurantstore.com/images/products/large/33754/820790.jpg",
       },
       {
-        title: "Product7",
-        description: "product7 description",
-        price: 100,
-        quantity: 2,
+        title: "Solar Panels",
+        description: "Sustainability is cool these days",
+        price: 900,
+        quantity: 8,
+        img: "http://giecdn.azureedge.net/storage/fileuploads/image/2020/12/15/solar%20panelsweb.jpg?w=736&h=414&mode=crop",
       },
       {
-        title: "Product8",
-        description: "product8 description",
-        price: 100,
-        quantity: 2,
+        title: "Water Bottle",
+        description: "Indestructable",
+        price: 15,
+        quantity: 30,
+        img: "https://cdn.shopify.com/s/files/1/2239/9823/products/swig-life-signature-20oz-bottle-seaglass.jpg?v=1583422828",
       },
     ];
 
@@ -162,18 +176,42 @@ async function populateInitialData() {
       {
         userid: 1,
         productid: 1,
+        orderid:2000,
         price: 100,
         quantity: 2,
       },
       {
         userid: 2,
         productid: 2,
+        orderid:2001,
         price: 100,
         quantity: 2,
       },
       {
         userid: 3,
         productid: 3,
+        orderid:2001,
+        price: 19.99,
+        quantity: 2,
+      },
+      {
+        userid: 3,
+        productid: 2,
+        orderid:2001,
+        price: 124.99,
+        quantity: 1,
+      },
+      {
+        userid: 3,
+        productid: 1,
+        orderid:2001,
+        price: 10,
+        quantity: 2,
+      },
+      {
+        userid: 3,
+        productid: 3,
+        orderid:2001,
         price: 19.99,
         quantity: 2,
       },

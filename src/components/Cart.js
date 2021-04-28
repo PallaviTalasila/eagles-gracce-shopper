@@ -4,6 +4,7 @@ import CartItem from './cart/CartItem'
 import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
 import zIndex from '@material-ui/core/styles/zIndex';
+import { Link } from 'react-router-dom';
 
 const useStyles = makeStyles({
   root: {
@@ -119,3 +120,4 @@ function Cart() {
 }
 
 export default Cart
+

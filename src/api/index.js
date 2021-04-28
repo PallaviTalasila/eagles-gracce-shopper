@@ -17,6 +17,7 @@ export async function login(username, password) {
     const payload = { username: username, password: password };
 
     const { data } = await axios.post(`/api/login`, payload);
+
     return data;
   } catch (error) {
     throw error;
@@ -84,11 +85,12 @@ export async function getOrdersByUser(username) {
   }
 }
 
-export async function addOrder(userid, productid, price, quantity) {
+export async function addOrder(userid, productid,orderid, price, quantity) {
   try {
     const payload = {
       userid: userid,
       productid: productid,
+      orderid:orderid,
       price: price,
       quantity: quantity,
     };
@@ -113,15 +115,6 @@ export async function deleteOrder(id, productid) {
   try {
     const payload = { productid: productid };
     const { data } = await axios.delete(`/api/orders/${id}`, payload);
-    return data;
-  } catch (error) {
-    throw error;
-  }
-}
-
-export async function getSomething() {
-  try {
-    const { data } = await axios.get("/");
     return data;
   } catch (error) {
     throw error;
