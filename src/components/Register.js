@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -7,12 +7,13 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
 import Link from '@material-ui/core/Link';
 import Paper from '@material-ui/core/Paper';
-import Box from '@material-ui/core/Box';
 import Grid from '@material-ui/core/Grid';
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
-
+import swal from "sweetalert";
+import { register } from '../api';
+import { Redirect } from "react-router-dom/cjs/react-router-dom.min";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -46,10 +47,59 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function Register() {
+const Register = ({
+  username,
+  setUsername,
+  password,
+  setPassword,
+  userToken,
+  setUserToken,
+  setLoggedIn,
+  loggedIn,
+  history,
+  email,
+  setEmail
+}) => {
   const classes = useStyles();
+  const [shouldRedirect, setRedirect] = useState(false);
 
-  return (
+  const [passwordConfirmation, setPasswordConfirmation] = useState("");
+
+  const confirmPasswords = (event) => {
+    event.preventDefault();
+    if (password !== passwordConfirmation) {
+      swal("Passwords do not match");
+    } else {
+      fetchApi(event);
+    }
+  };
+
+  const fetchApi = async (event) => {
+    event.preventDefault();
+    try {
+      const data = await register(username, password, email);
+      const newUsername = data.username;
+
+      if (newUsername) {
+        
+        // localStorage.setItem(`Username`, username);
+        swal("Successfully Registered!").then(() => {
+          setRedirect(true);
+        });
+        setUsername("");
+        setPassword("");
+        // history.push("/");
+      } else {
+        swal("Registration Failed, Please Try Again") // display an error message on the front end
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+   return shouldRedirect ? (
+    <Redirect push to="/login" />
+  ) : (
     <Grid container component="main" className={classes.root}>
       <CssBaseline />
       <Grid item xs={false} sm={4} md={7} className={classes.image} />
@@ -61,17 +111,28 @@ function Register() {
           <Typography component="h1" variant="h5">
             Register
           </Typography>
-          <form className={classes.form} noValidate>
+          <form className={classes.form} onSubmit={confirmPasswords}>
             <TextField
               variant="outlined"
               margin="normal"
               required
               fullWidth
               id="email"
-              label="Email Address"
+              label="Email"
               name="email"
-              autoComplete="email"
               autoFocus
+              value={email}
+              onChange={(event) => setEmail(event.target.value)}
+            />
+            <TextField
+              variant="outlined"
+              margin="normal"
+              required
+              fullWidth
+              label="Username"
+              autoFocus
+              value={username}
+              onChange={(event) => setUsername(event.target.value)}
             />
             <TextField
               variant="outlined"
@@ -83,6 +144,8 @@ function Register() {
               type="password"
               id="password"
               autoComplete="current-password"
+              value={password}
+              onChange={(event) => setPassword(event.target.value)} 
             />
             <TextField
               variant="outlined"
@@ -92,6 +155,8 @@ function Register() {
               name="password"
               label="Confirm Password"
               type="password"
+              value={passwordConfirmation}
+              onChange={(event) => setPasswordConfirmation(event.target.value)} 
             />
             <FormControlLabel
               control={<Checkbox value="remember" color="primary" />}
