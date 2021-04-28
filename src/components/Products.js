@@ -21,11 +21,6 @@ const useStyles = makeStyles((theme) => ({
       media: {
         height: 140,
       },
-      title: {
-          flexBasis: '100%',
-          height: '20vh',
-          backgroundColor: '#0A8754'
-      },
     modal: {
       display: 'flex',
       alignItems: 'center',
@@ -67,11 +62,7 @@ console.log(products)
 
     return (
         <div>
-        <div className ={classes.title}>
-            <h1 style={{display:'flex', justifyContent:'center', paddingTop:'4%', color:'white'}}>
-            Our Products
-            </h1>
-        </div>
+       
         <div style={{display: 'flex', flexWrap: 'wrap'}}>
         {products.map((product, index) =>  
         <Card className={classes.root} id={index}>

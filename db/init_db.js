@@ -18,7 +18,7 @@ async function buildTables() {
     DROP TABLE IF EXISTS ORDERS;
     DROP TABLE IF EXISTS USERS;
     DROP TABLE IF EXISTS PRODUCTS; 
-    DROP SEQUENCE ORDER_ID_SEQ;  
+    DROP SEQUENCE IF EXISTS ORDER_ID_SEQ; 
   `);
     console.log("Finished dropping tables!");
 
