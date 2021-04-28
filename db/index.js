@@ -17,12 +17,12 @@ const client = new Client({
 
 /**********************************Product Methods************************/
 
-async function createProduct({ title, description, price, quantity }) {
+async function createProduct({ title, description, price, quantity, img }) {
   const query = `INSERT INTO
-      products(title, description,price,quantity)
-      VALUES($1, $2,$3,$4)
+      products(title, description,price,quantity, img)
+      VALUES($1, $2,$3,$4, $5)
       returning *`;
-  const values = [title, description, price, quantity];
+  const values = [title, description, price, quantity, img];
 
   try {
     const {
@@ -45,6 +45,7 @@ SELECT P.TITLE,
 P.DESCRIPTION,
 P.PRICE,
 P.QUANTITY,
+P.IMG,
 R.REVIEWTEXT
 FROM P
 LEFT JOIN R ON (P.ID = R.PRODUCTID);`;

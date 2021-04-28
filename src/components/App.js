@@ -5,6 +5,17 @@ import { getAllProducts } from "../api";
 import { Header, Products, Login, Register } from "../components";
 import './App.css';
 
+
+/* Need More specified alerts, like if there is no user registered. 
+   Also need to get the IMGS Renderings
+   And the Quantity Working on the Database end
+   Make the remove from cart only render on the specified product
+   Pop up a modal with all the reviewtexts 
+   Fonts for certain html tags staying default
+   change description to only use one line
+   Add to Cart will store the OrderId on local storage
+   Create Review
+    */
 const App = () => {
   const [products, setProducts] = useState([]);
   // const [searchTerm, setSearchTerm] = useState("");
@@ -15,6 +26,7 @@ const App = () => {
   const [password, setPassword] = useState("");
   const [userToken, setUserToken] = useState(loginKey ? loginKey : false);
   const [loggedIn, setLoggedIn] = useState(loginKey ? true : false);
+  const [count, setCount] = React.useState(0);
 
   useEffect(() => {
     try {
@@ -29,12 +41,19 @@ const App = () => {
   return (
     <div className="app">
       <Router>
-        <Header/>
+        <Header 
+        setUserToken={setUserToken}
+        loggedIn={loggedIn} 
+        setLoggedIn={setLoggedIn}
+        count={count}
+        />
         <Switch>
           <Route exact path="/products">
             <Products
              products={products}
-             setProducts={setProducts} />
+             setProducts={setProducts}
+             count={count}
+             setCount={setCount} />
           </Route>
 
           <Route exact path="/login">

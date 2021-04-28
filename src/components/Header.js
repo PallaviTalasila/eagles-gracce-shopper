@@ -1,15 +1,15 @@
 import React from 'react';
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles, withStyles } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
-import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import ShoppingCartIcon from '@material-ui/icons/ShoppingCart';
 import StorefrontIcon from '@material-ui/icons/Storefront';
 import LockIcon from '@material-ui/icons/Lock';
 import { Link } from 'react-router-dom';
-// import Logo from './imgs/Logo.svg';
 import IconButton from '@material-ui/core/IconButton';
+import ExitToAppIcon from '@material-ui/icons/ExitToApp';
+import Badge from '@material-ui/core/Badge';
 
 
 
@@ -22,12 +22,20 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+const StyledBadge = withStyles((theme) => ({
+  badge: {
+    right: -3,
+    top: 8,
+    border: `2px solid #26F0F1`,
+    padding: '0 4px',
+  },
+}))(Badge);
 
 function Logo() {
-  return <img style={{ background: 'transparent', height: 50, width: 50}} src='/imgs/GraceShopperLogo.png' />;
+  return <img style={{ background: 'transparent', height: 50, width: 50}} src='/imgs/GraceShopperLogoNew.png' alt=""/>;
 }
 
-function Header() {
+function Header({setUserToken, loggedIn, setLoggedIn, count}) {
 
     const classes = useStyles();
 
@@ -53,21 +61,36 @@ function Header() {
                 </Button>
                 </Link>
 
-                <Link to="/cart" style={{ textDecoration: 'none', color:'#26F0F1' }}>
+                <Link to="/cart" style={{ textDecoration: 'none', color:'#26F0F1', marginLeft:'1%', marginRight:'1%' }}>
                 <Button
                     color="inherit"
-                    endIcon={<ShoppingCartIcon />}
+                    endIcon={<StyledBadge badgeContent={count} color="secondary">
+                              <ShoppingCartIcon />
+                            </StyledBadge>}
                     >Cart
                 </Button>
                 </Link>
 
+                {loggedIn ? 
+                <Link to="/login" style={{ textDecoration: 'none', color:'#26F0F1' }}>
+                <Button
+                    color="inherit"
+                    endIcon={<ExitToAppIcon />}
+                    onClick={() => {localStorage.clear() 
+                    setUserToken('')
+                    setLoggedIn(false)
+                    }}
+                    >Logout
+                </Button>
+                </Link> : 
+                
                 <Link to="/login" style={{ textDecoration: 'none', color:'#26F0F1' }}>
                 <Button 
                 color="inherit"
                 
                 endIcon={<LockIcon />}>Login
                 </Button>
-                </Link>
+                </Link>}
                 
                 </Toolbar>
             </AppBar>

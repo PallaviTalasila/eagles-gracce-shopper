@@ -70,9 +70,8 @@ apiRouter.post("/login", async (req, res, next) => {
 
   try {
     const user = await getUser({ username, password });
-    console.log(JWT_SECRET);
+
     if (user) {
-      
       const token = jwt.sign(
         { id: user.id, username: user.username },
        JWT_SECRET

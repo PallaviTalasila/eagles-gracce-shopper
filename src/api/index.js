@@ -118,12 +118,3 @@ export async function deleteOrder(id, productid) {
     throw error;
   }
 }
-
-export async function getSomething() {
-  try {
-    const { data } = await axios.get("/");
-    return data;
-  } catch (error) {
-    throw error;
-  }
-}
