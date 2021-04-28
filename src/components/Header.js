@@ -28,7 +28,7 @@ const StyledBadge = withStyles((theme) => ({
   },
 }))(Badge);
 
-function Header({ setUsername, setPassword, loggedIn, setLoggedIn }) {
+function Header({ setUsername, setPassword, loggedIn, setLoggedIn ,count}) {
   const history = useHistory();
   const classes = useStyles();
   const handleClick = (event) => {
@@ -80,8 +80,23 @@ function Header({ setUsername, setPassword, loggedIn, setLoggedIn }) {
             </Link>
           )}
 
-          <Link to="/cart" style={{ textDecoration: "none", color: "#26F0F1" }}>
-            <Button color="inherit" endIcon={<ShoppingCartIcon />}>
+          <Link
+            to="/cart"
+            style={{
+              textDecoration: "none",
+              color: "#26F0F1",
+              marginLeft: "1%",
+              marginRight: "1%",
+            }}
+          >
+            <Button
+              color="inherit"
+              endIcon={
+                <StyledBadge badgeContent={count} color="secondary">
+                  <ShoppingCartIcon />
+                </StyledBadge>
+              }
+            >
               Cart
             </Button>
           </Link>

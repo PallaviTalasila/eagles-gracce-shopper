@@ -32,6 +32,7 @@ const App = () => {
           setPassword={setPassword}
           loggedIn={loggedIn}
           setLoggedIn={setLoggedIn}
+          count={count}
         />
         <Switch>
           <Route
@@ -98,6 +99,8 @@ const App = () => {
                 {...props}
                 products={products}
                 setProducts={setProducts}
+                count={count}
+                setCount={setCount}                
               />
             )}
           />

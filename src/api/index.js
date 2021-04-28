@@ -90,7 +90,7 @@ export async function addOrder(userid, productid,orderid, price, quantity) {
     const payload = {
       userid: userid,
       productid: productid,
-      orderid=orderid,
+      orderid:orderid,
       price: price,
       quantity: quantity,
     };
