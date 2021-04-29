@@ -36,9 +36,11 @@ function Header({ setUsername, setPassword, loggedIn, setLoggedIn ,count}) {
     event.preventDefault();
     localStorage.removeItem(`Token`);
     localStorage.removeItem(`Username`);
+    localStorage.clear();
     setLoggedIn(false);
     setUsername("");
     setPassword("");
+    
     history.push("/products");
   };
 
