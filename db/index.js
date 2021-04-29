@@ -217,29 +217,43 @@ async function getUser({ username, password }) {
 async function generateorderseq() {
   const query = `select nextval('order_id_seq')`;
   try {
-    const {
-      rows: orderid,
-    } = await client.query(query);
+    const { rows: orderid } = await client.query(query);
     return orderid;
   } catch (error) {
     throw error;
   }
 }
 
-async function createOrder({ username, productid, orderid, price, quantity }) {
-
-  const user = await getUserByUsername(username);
-  const query = `INSERT INTO
-      orders(userid, productid,orderid, price, quantity)
-      VALUES($1, $2,$3,$4,$5)
-      returning *`;
-  const values = [user.id, productid, orderid, price, quantity];
-
+async function createOrder({
+  userid,
+  productid,
+  orderid,
+  price,
+  quantity,
+  username,
+}) {
   try {
-    const {
-      rows: [order],
-    } = await client.query(query, values);
-    return order;
+    const query = `INSERT INTO
+    orders(userid, productid,orderid, price, quantity)
+    VALUES($1, $2,$3,$4,$5)
+    returning *`;
+
+    if (userid) {
+      const values = [userid, productid, orderid, price, quantity];
+
+      const {
+        rows: [order],
+      } = await client.query(query, values);
+      return order;
+    } else if (username) {
+      const user = await getUserByUsername(username);
+      const values = [user.id, productid, orderid, price, quantity];
+
+      const {
+        rows: [order],
+      } = await client.query(query, values);
+      return order;
+    }
   } catch (error) {
     throw error;
   }
@@ -250,8 +264,22 @@ async function getOrdersByUser(userid) {
   const values = [userid];
 
   try {
-    const { rows: order } = await client.query(query, values);
-    return order;
+    const { rows: orders } = await client.query(query, values);
+    const productids = orders.map((order) => order.productid).join(",");
+
+    const { rows: orderedProducts } = await client.query(
+      `select p.title,p.description,p.price,p.img from products p where p.id in (${productids})`
+    );
+
+    const myOrders = await Promise.all(
+      orders.map(async (order) => {
+        order.products = [];
+        if (orderedProducts) order.products = orderedProducts;
+        return order;
+      })
+    );
+
+    return myOrders;
   } catch (error) {
     throw error;
   }
@@ -336,5 +364,5 @@ module.exports = {
   getOrdersByUser,
   getUserByUsername,
   getUser,
-  generateorderseq
+  generateorderseq,
 };

@@ -161,7 +161,7 @@ apiRouter.get("/orders/:username", async (req, res, next) => {
 
 apiRouter.post("/orders", async (req, res, next) => {
   try {
-    const { username, productid, orderid, price, quantity } = req.body;
+    const { userid, productid, orderid, price, quantity,username } = req.body;
 
     if (orderid) {
       const postOrder = await createOrder({
