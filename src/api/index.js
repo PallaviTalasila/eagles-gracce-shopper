@@ -24,8 +24,6 @@ export async function login(username, password) {
   }
 }
 
-
-
 /***********************PRODUCTS******************************/
 
 export async function getAllProducts() {
@@ -87,14 +85,22 @@ export async function getOrdersByUser(username) {
   }
 }
 
-export async function addOrder(username, productid,orderid, price, quantity) {
+export async function addOrder(
+  userid,
+  productid,
+  orderid,
+  price,
+  quantity,
+  username
+) {
   try {
     const payload = {
-      username: username,
+      userid: userid,
       productid: productid,
-      orderid:orderid,
+      orderid: orderid,
       price: price,
       quantity: quantity,
+      username: username,
     };
     const { data } = await axios.post(`/api/orders`, payload);
     return data;
