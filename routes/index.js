@@ -163,23 +163,25 @@ apiRouter.post("/orders", async (req, res, next) => {
   try {
     const { userid, productid, orderid, price, quantity,username } = req.body;
 
-    if (orderid) {
+    if (orderid !== null) {
       const postOrder = await createOrder({
-        username,
+        userid,
         productid,
         orderid,
         price,
         quantity,
+        username
       });
       res.send(postOrder);
     } else {
       const genorderid = await generateorderseq();
       const postOrder = await createOrder({
-        username,
+        userid,
         productid,
         genorderid,
         price,
         quantity,
+        username
       });
       res.send(postOrder);
     }

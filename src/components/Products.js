@@ -36,7 +36,8 @@ const useStyles = makeStyles((theme) => ({
 
 
 function Products({products, count, setCount,setProducts, username}) {
-console.log(products)
+  const userNameKey = localStorage.getItem(`Username`);
+
     const classes = useStyles();
 
     useEffect(() => {
@@ -152,15 +153,15 @@ console.log(products)
 
                     setCount(count + 1);
                     let newQuantity = product.quantity+1
-                    const productId = product.id
-                    const orderId = null
-                    const price = product.price
-                    const quantity = product.quantity
-                    
+                    // const productId = product.id
+                    // const orderId = null
+                    // const price = product.price
+                    // const quantity = product.quantity
+                    console.log(userNameKey)
                     // use the helper function to get userId, then pass that to create order
                     // const orderId = count===1 ? null : localStorage.getItem('orderId')
-                    const order = await addOrder(1, productId, orderId, price, quantity) // this will return a order id, then use that in edit order to change the quantity
-                    console.log(order)
+                    const order = await addOrder(null, product.id, null, product.price, product.quantity, userNameKey) // this will return a order id, then use that in edit order to change the quantity
+                    
                     // const editOrders = await  editOrder(userId, productId, newQuantity)
                 }}
                 >
