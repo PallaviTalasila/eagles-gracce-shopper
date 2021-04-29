@@ -49,8 +49,6 @@ function Products({ products, count, setCount, setProducts, username }) {
     }
   }, []);
 
-  const [open, setOpen] = React.useState(false);
-
   const handleOpen = () => {
     setOpen(true);
   };
@@ -59,12 +57,36 @@ function Products({ products, count, setCount, setProducts, username }) {
     setOpen(false);
   };
 
-  function idChecker(id, index) {
-    // console.log(id, index)
-    // if(id === index) {
-    // }
-  }
-console.log(products);
+  const addToCart = async (product) => {
+    setCount(count + 1);
+    let newQuantity = product.quantity - 1;
+
+    if (count === 1) {
+      const order = await addOrder(
+        null,
+        product.id,
+        null,
+        product.price,
+        product.quantity,
+        userNameKey
+      );
+      await editOrder(order.orderid, product.productid, newQuantity);
+      localStorage.setItem("orderid", order.orderid);
+    } else {
+      const newProducts = await getAllProducts();
+      const quantityRender = newProducts.filter(
+        (newProduct) => product.productid === newProduct.id
+      );
+      let newQuantity = quantityRender.quantity - 1;
+      await editOrder(
+        localStorage.getItem("orderid"),
+        product.productid,
+        newQuantity
+      );
+    }
+  };
+
+  console.log(products);
   return (
     <div>
       <div style={{ display: "flex", flexWrap: "wrap" }}>
@@ -143,25 +165,7 @@ console.log(products);
                 size="small"
                 style={{ backgroundColor: "#26F0F1", color: "black" }}
                 endIcon={<ShoppingCartIcon />}
-                onClick={async () => {
-                  setCount(count + 1);
-                  let newQuantity = product.quantity - 1;
-                  // const orderId = count===1 ? null : localStorage.getItem('orderId')
-                  const order = await addOrder(
-                    null,
-                    product.id,
-                    null,
-                    product.price,
-                    product.quantity,
-                    userNameKey
-                  ); // this will return a order id, then use that in edit order to change the quantity
-                  console.log(parseInt(order.orderid));
-                  const editOrders = await editOrder(
-                    parseInt(order.orderid),
-                    order.productid,
-                    newQuantity
-                  );
-                }}
+                onClick={() => addToCart(product)}
               >
                 Add to Cart
               </Button>
