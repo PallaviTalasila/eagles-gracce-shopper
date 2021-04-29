@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
-import { Header, Products, Login, Register, OrderHistory } from "../components";
+import { Header, Products, Login, Register, OrderHistory, Cart, CheckOut } from "../components";
 import "./App.css";
 
 /* Need More specified alerts, like if there is no user registered. 
@@ -15,6 +15,7 @@ import "./App.css";
     */
 const App = () => {
   const [products, setProducts] = useState([]);
+  const [CartData, setCartData] = useState([]);
   const loginKey = localStorage.getItem(`Token`);
   const userNameKey = localStorage.getItem(`Username`);
   const [username, setUsername] = useState(userNameKey ? userNameKey : "");
@@ -85,6 +86,31 @@ const App = () => {
             path="/myOrders"
             render={(props) => (
               <OrderHistory
+                {...props}
+                username={username}
+                loggedIn={loggedIn}
+              />
+            )}
+          />
+
+<Route
+            exact
+            path="/cart"
+            render={(props) => (
+              <Cart
+                {...props}
+                username={username}
+                loggedIn={loggedIn}
+                setCartData={setCartData}
+                CartData={CartData}
+              />
+            )}
+          />
+          <Route
+            exact
+            path="/check-out"
+            render={(props) => (
+              <CheckOut
                 {...props}
                 username={username}
                 loggedIn={loggedIn}

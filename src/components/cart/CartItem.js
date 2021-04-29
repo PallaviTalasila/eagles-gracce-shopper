@@ -42,13 +42,16 @@ function CartItem(props) {
             <CardActionArea>
                 <CardContent className={classes.content}>
 
-                    <Avatar variant="rounded" className={classes.large}>OP</Avatar>
+                    <Avatar variant="rounded" className={classes.large} src={cardData?.detail?.img} />
                     <div>
                         <Typography component="h5" variant="h6">
-                            {cardData.name}<span className={classes.priceTag}>{cardData.price}</span>
+                            {cardData?.detail?.title || ''}<span className={classes.priceTag}>${cardData.price}</span>
                         </Typography>
                         <Typography variant="subtitle1" color="textSecondary">
-                            {cardData.desc}
+                            {cardData?.detail?.description || ''}
+                        </Typography>
+                        <Typography variant="subtitle1" color="textSecondary">
+                            Quantity: {cardData?.quantity || ''}
                         </Typography>
                     </div>
                 </CardContent>
@@ -62,6 +65,7 @@ function CartItem(props) {
                     variant="outlined"
                     size="small"
                     color="primary"
+                    style={{ backgroundColor: '#26F0F1', color: 'black' }}
                 >
                     Edit Cart
                 </Button>
