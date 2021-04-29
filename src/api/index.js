@@ -102,6 +102,7 @@ export async function addOrder(
       quantity: quantity,
       username: username,
     };
+
     const { data } = await axios.post(`/api/orders`, payload);
     return data;
   } catch (error) {

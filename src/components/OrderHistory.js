@@ -5,9 +5,8 @@ import GridListTile from "@material-ui/core/GridListTile";
 import GridListTileBar from "@material-ui/core/GridListTileBar";
 import IconButton from "@material-ui/core/IconButton";
 import StarBorderIcon from "@material-ui/icons/StarBorder";
-
-import { getOrdersByUser } from "../api";
-import { ContactsOutlined } from "@material-ui/icons";
+import { getOrdersByUser, addOrder } from "../api";
+import Button from "@material-ui/core/Button";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -31,6 +30,15 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+async function createOrder(e) {
+  e.preventDefault();
+  try {
+    const order = await addOrder(null, 1, null, 100, 3, "user1");
+  } catch (error) {
+    console.error(error);
+  }
+}
+
 export default function OrderHistory({ username, loggedIn }) {
   const classes = useStyles();
 
@@ -48,35 +56,9 @@ export default function OrderHistory({ username, loggedIn }) {
   }, []);
 
   return (
-    <div className={classes.root}>
-      {orderHist
-        ? orderHist.map((order, index) => {
-            console.log(order);
-            
-              order.products.map((tile, index) => {
-                console.log(tile);
-                return(
-                <GridList className={classes.gridList} cols={2.5}>
-                  <GridListTile key={tile.img}>
-                    <img src={tile.img} alt={tile.title} />
-                    <GridListTileBar
-                      title={tile.title}
-                      classes={{
-                        root: classes.titleBar,
-                        title: classes.title,
-                      }}
-                      actionIcon={
-                        <IconButton aria-label={`star ${tile.title}`}>
-                          <StarBorderIcon className={classes.title} />
-                        </IconButton>
-                      }
-                    />
-                  </GridListTile>
-                </GridList>);
-              });
-            
-          })
-        : "You dont have any Previous Orders"}
+    <div>
+      ' I am in here1'
+      <button onClick={createOrder}>create order</button>
     </div>
   );
 }
