@@ -1,183 +1,188 @@
-import React ,{useEffect}from 'react'
-import { makeStyles } from '@material-ui/core/styles';
-import Card from '@material-ui/core/Card';
-import CardActions from '@material-ui/core/CardActions';
-import CardContent from '@material-ui/core/CardContent';
-import CardMedia from '@material-ui/core/CardMedia';
-import Button from '@material-ui/core/Button';
-import Typography from '@material-ui/core/Typography';
-import ShoppingCartIcon from '@material-ui/icons/ShoppingCart';
-import placeholderimg from './imgs/placeholderimg.png'
-import { editOrder, getAllProducts, addOrder } from '../api';
-import Modal from '@material-ui/core/Modal';
-import Backdrop from '@material-ui/core/Backdrop';
-import Fade from '@material-ui/core/Fade';
+import React, { useEffect } from "react";
+import { makeStyles } from "@material-ui/core/styles";
+import Card from "@material-ui/core/Card";
+import CardActions from "@material-ui/core/CardActions";
+import CardContent from "@material-ui/core/CardContent";
+import CardMedia from "@material-ui/core/CardMedia";
+import Button from "@material-ui/core/Button";
+import Typography from "@material-ui/core/Typography";
+import ShoppingCartIcon from "@material-ui/icons/ShoppingCart";
+import placeholderimg from "./imgs/placeholderimg.png";
+import { editOrder, getAllProducts, addOrder } from "../api";
+import Modal from "@material-ui/core/Modal";
+import Backdrop from "@material-ui/core/Backdrop";
+import Fade from "@material-ui/core/Fade";
 
 const useStyles = makeStyles((theme) => ({
-    root: {
-        width: '20%',
-        margin: '2%'
-      },
-      media: {
-        height: 250,
-      },
-    modal: {
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-    },
-    paper: {
-      backgroundColor: theme.palette.background.paper,
-      border: '2px solid #000',
-      boxShadow: theme.shadows[5],
-      padding: theme.spacing(2, 4, 3),
-    },
-  }));
+  root: {
+    width: "20%",
+    margin: "2%",
+  },
+  media: {
+    height: 250,
+  },
+  modal: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  paper: {
+    backgroundColor: theme.palette.background.paper,
+    border: "2px solid #000",
+    boxShadow: theme.shadows[5],
+    padding: theme.spacing(2, 4, 3),
+  },
+}));
 
-
-function Products({products, count, setCount,setProducts, username}) {
+function Products({ products, count, setCount, setProducts, username }) {
   const userNameKey = localStorage.getItem(`Username`);
 
-    const classes = useStyles();
+  const classes = useStyles();
 
-    useEffect(() => {
-      try {
-        Promise.all([getAllProducts()]).then(([data]) => {
-          setProducts(data);
-        });
-      } catch (error) {
-        console.log(error);
-      }
-    }, []);
-    
-    const [open, setOpen] = React.useState(false);
-
-    const handleOpen = () => {
-    setOpen(true);
-    };
-
-    const handleClose = () => {
-    setOpen(false);
-    };
- 
-    function idChecker(id, index) {
-        // console.log(id, index)
-        
-        // if(id === index) {
-            
-        // } 
+  useEffect(() => {
+    try {
+      Promise.all([getAllProducts()]).then(([data]) => {
+        setProducts(data);
+      });
+    } catch (error) {
+      console.log(error);
     }
+  }, []);
 
-    return (
-        <div>
-       
-        <div style={{display: 'flex', flexWrap: 'wrap'}}>
-        {products.map((product, index) =>  
-        <Card className={classes.root} key={index} id={index} >
-                <CardMedia
-                className={classes.media}
-                image={product.img ? product.img : placeholderimg}
-                
-                />
-                <CardContent>
+  const [open, setOpen] = React.useState(false);
 
-                <Typography gutterBottom variant="h5" component="h2">
-                  {product.title}
-                </Typography>
+  const handleOpen = () => {
+    setOpen(true);
+  };
 
-                <Typography
-                  variant="body2"
-                  color="textSecondary"
-                  variant="h5"
-                  component="h5"
-                >
-                  {product.description}
-                </Typography>
+  const handleClose = () => {
+    setOpen(false);
+  };
 
-                <Typography
-                  variant="body2"
-                  color="textPrimary"
-                  variant="h5"
-                  component="h5"
-                >
-                  ${product.price}
-                </Typography>
+  function idChecker(id, index) {
+    // console.log(id, index)
+    // if(id === index) {
+    // }
+  }
+console.log(products);
+  return (
+    <div>
+      <div style={{ display: "flex", flexWrap: "wrap" }}>
+        {products.map((product, index) => (
+          <Card className={classes.root} key={index} id={index}>
+            <CardMedia
+              className={classes.media}
+              image={product.img ? product.img : placeholderimg}
+            />
+            <CardContent>
+              <Typography gutterBottom variant="h5" component="h2">
+                {product.title}
+              </Typography>
 
-                <Typography
-                  variant="body2"
-                  color="textPrimary"
-                  variant="h6"
-                  component="h6"
-                >
-                  Quantity : {product.quantity}
-                </Typography>
+              <Typography
+                variant="body2"
+                color="textSecondary"
+                variant="h5"
+                component="h5"
+              >
+                {product.description}
+              </Typography>
 
-                </CardContent>
-            
+              <Typography
+                variant="body2"
+                color="textPrimary"
+                variant="h5"
+                component="h5"
+              >
+                ${product.price}
+              </Typography>
+
+              <Typography
+                variant="body2"
+                color="textPrimary"
+                variant="h6"
+                component="h6"
+              >
+                Quantity : {product.quantity}
+              </Typography>
+            </CardContent>
+
             <CardActions>
-                <Button 
-                size="small" 
-                style={{backgroundColor:"#0A8754", color:'white'}} 
+              <Button
+                size="small"
+                style={{ backgroundColor: "#0A8754", color: "white" }}
                 variant="contained"
                 type="button"
-                onClick={handleOpen}>
+                onClick={handleOpen}
+              >
                 Reviews
               </Button>
 
-                <Modal
+              <Modal
                 className={classes.modal}
                 open={open}
                 onClose={handleClose}
                 closeAfterTransition
                 BackdropComponent={Backdrop}
                 BackdropProps={{
-                    timeout: 500,
+                  timeout: 500,
                 }}
-                
-                >
+              >
                 <Fade in={open}>
-                    <div className={classes.paper}>
+                  <div className={classes.paper}>
                     <h2 id="transition-modal-title">{product.reviewtext}</h2>
-                    <p id="transition-modal-description">{product.reviewtext}</p> 
-                    </div>
+                    <p id="transition-modal-description">
+                      {product.reviewtext}
+                    </p>
+                  </div>
                 </Fade>
-                </Modal> 
+              </Modal>
 
-                <Button 
+              <Button
                 variant="outlined"
-                size="small" 
-                
-                style={{backgroundColor:'#26F0F1', color:'black'}}
+                size="small"
+                style={{ backgroundColor: "#26F0F1", color: "black" }}
                 endIcon={<ShoppingCartIcon />}
                 onClick={async () => {
-
-                    setCount(count + 1);
-                    let newQuantity = product.quantity-1
-                    // const orderId = count===1 ? null : localStorage.getItem('orderId')
-                    const order = await addOrder(null, product.id, null, product.price, product.quantity, userNameKey) // this will return a order id, then use that in edit order to change the quantity
-                    console.log(parseInt(order.orderid))
-                    const editOrders = await editOrder(parseInt(order.orderid), order.productid, newQuantity)
+                  setCount(count + 1);
+                  let newQuantity = product.quantity - 1;
+                  // const orderId = count===1 ? null : localStorage.getItem('orderId')
+                  const order = await addOrder(
+                    null,
+                    product.id,
+                    null,
+                    product.price,
+                    product.quantity,
+                    userNameKey
+                  ); // this will return a order id, then use that in edit order to change the quantity
+                  console.log(parseInt(order.orderid));
+                  const editOrders = await editOrder(
+                    parseInt(order.orderid),
+                    order.productid,
+                    newQuantity
+                  );
                 }}
-                >
+              >
                 Add to Cart
-                </Button>
+              </Button>
 
-                {count > 0 ? <Button 
-                variant="contained"
-                size="small" 
-                color="secondary"
-                endIcon={<ShoppingCartIcon />}
-                onClick={() => {
+              {count > 0 ? (
+                <Button
+                  variant="contained"
+                  size="small"
+                  color="secondary"
+                  endIcon={<ShoppingCartIcon />}
+                  onClick={() => {
                     setCount(count - 1);
                     // editOrder({id, product.id, quantity})
-                }}
+                  }}
                 >
-                Remove from Cart
-                </Button> : null}
-
+                  Remove from Cart
+                </Button>
+              ) : null}
             </CardActions>
           </Card>
-        )}
+        ))}
       </div>
     </div>
   );

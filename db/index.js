@@ -35,26 +35,25 @@ async function createProduct({ title, description, price, quantity, img }) {
 }
 
 async function getAllProducts() {
-  const query = `WITH P AS
-  (SELECT *
-    FROM PRODUCTS),
-R AS
-  (SELECT *
-    FROM REVIEWS)
-SELECT P.TITLE,
-P.DESCRIPTION,
-P.PRICE,
-P.ID,
-P.QUANTITY,
-P.IMG,
-R.REVIEWTEXT
-FROM P
-LEFT JOIN R ON (P.ID = R.PRODUCTID);`;
+  const query = `SELECT * FROM PRODUCTS;`;
 
   try {
-    const { rows } = await client.query(query);
+    const { rows: products } = await client.query(query);
+    const productids = products.map((product) => product.id).join(",");
 
-    return rows;
+    const { rows: reviews } = await client.query(
+      `select userid,productid,reviewtext from reviews  where reviews.productid in (${productids})`
+    );
+
+    const myproducts = await Promise.all(
+      products.map(async (product) => {
+        product.reviews = [];
+        if (reviews) product.reviews = reviews;
+        return product;
+      })
+    );
+
+    return myproducts;
   } catch (error) {
     throw error;
   }
@@ -336,7 +335,7 @@ async function deleteOrder(id, productid) {
 async function createReview({ userid, productid, reviewtext }) {
   const query = `INSERT INTO
       reviews(userid, productid, reviewtext)
-      VALUES($1, $2,$3)
+      VALUES($1,$2,$3)
       returning *`;
   const values = [userid, productid, reviewtext];
 
