@@ -217,8 +217,10 @@ async function getUser({ username, password }) {
 async function generateorderseq() {
   const query = `select nextval('order_id_seq')`;
   try {
-    const { rows: orderid } = await client.query(query);
-    return orderid;
+    const {
+      rows: [orderid],
+    } = await client.query(query);
+    return orderid.nextval;
   } catch (error) {
     throw error;
   }
@@ -240,7 +242,6 @@ async function createOrder({
 
     if (userid) {
       const values = [userid, productid, orderid, price, quantity];
-
       const {
         rows: [order],
       } = await client.query(query, values);

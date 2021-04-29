@@ -152,17 +152,11 @@ function Products({products, count, setCount,setProducts, username}) {
                 onClick={async () => {
 
                     setCount(count + 1);
-                    let newQuantity = product.quantity+1
-                    // const productId = product.id
-                    // const orderId = null
-                    // const price = product.price
-                    // const quantity = product.quantity
-                    console.log(userNameKey)
-                    // use the helper function to get userId, then pass that to create order
+                    let newQuantity = product.quantity-1
                     // const orderId = count===1 ? null : localStorage.getItem('orderId')
                     const order = await addOrder(null, product.id, null, product.price, product.quantity, userNameKey) // this will return a order id, then use that in edit order to change the quantity
-                    
-                    // const editOrders = await  editOrder(userId, productId, newQuantity)
+                    console.log(parseInt(order.orderid))
+                    const editOrders = await editOrder(parseInt(order.orderid), order.productid, newQuantity)
                 }}
                 >
                 Add to Cart
