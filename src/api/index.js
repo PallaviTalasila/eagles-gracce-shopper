@@ -113,7 +113,9 @@ export async function addOrder(
 export async function editOrder(id, productid, quantity) {
   try {
     const payload = { productid: productid, quantity: quantity };
+
     const { data } = await axios.patch(`/api/orders/${id}`, payload);
+
     return data;
   } catch (error) {
     throw error;

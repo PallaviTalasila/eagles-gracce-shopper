@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import Card from "@material-ui/core/Card";
 import CardActions from "@material-ui/core/CardActions";
@@ -36,6 +36,7 @@ const useStyles = makeStyles((theme) => ({
 
 function Products({ products, count, setCount, setProducts, username }) {
   const userNameKey = localStorage.getItem(`Username`);
+  const [open, setOpen] = useState(false);
 
   const classes = useStyles();
 
@@ -60,8 +61,10 @@ function Products({ products, count, setCount, setProducts, username }) {
   const addToCart = async (product) => {
     setCount(count + 1);
     let newQuantity = product.quantity - 1;
+    console.log(product);
+    console.log("count:", count);
 
-    if (count === 1) {
+    if (count === 0) {
       const order = await addOrder(
         null,
         product.id,
@@ -70,19 +73,39 @@ function Products({ products, count, setCount, setProducts, username }) {
         product.quantity,
         userNameKey
       );
-      await editOrder(order.orderid, product.productid, newQuantity);
       localStorage.setItem("orderid", order.orderid);
+
+      //await editOrder(order.orderid, product.id, newQuantity);
+      await editProduct(product.is, null, null, null, newQuantity);
+    
+      
+      try {
+        Promise.all([getAllProducts()]).then(([data]) => {
+          setProducts(data);
+        });
+      } catch (error) {
+        console.log(error);
+      }
     } else {
-      const newProducts = await getAllProducts();
-      const quantityRender = newProducts.filter(
-        (newProduct) => product.productid === newProduct.id
-      );
-      let newQuantity = quantityRender.quantity - 1;
-      await editOrder(
+      try {
+        Promise.all([getAllProducts()]).then(([data]) => {
+          setProducts(data);
+        });
+      } catch (error) {
+        console.log(error);
+      }
+
+      let newQuantity = product.quantity - 1;
+      //await editOrder(localStorage.getItem("orderid"), product.id, newQuantity);
+      await addOrder(
+        null,
+        product.id,
         localStorage.getItem("orderid"),
-        product.productid,
-        newQuantity
+        product.price,
+        product.quantity,
+        userNameKey
       );
+      await editProduct(product.id, null, null, null, newQuantity);
     }
   };
 

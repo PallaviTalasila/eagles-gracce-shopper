@@ -297,7 +297,7 @@ async function editOrder(id, productid, quantity) {
             SET quantity =$3
             WHERE id=$1
             and productid=$2
-            RETURNING *;
+            RETURNING quantity,id,productid;
         `,
       [id, productid, quantity]
     );
