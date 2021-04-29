@@ -8,7 +8,7 @@ import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 import ShoppingCartIcon from '@material-ui/icons/ShoppingCart';
 import placeholderimg from './imgs/placeholderimg.png'
-import { editOrder,getAllProducts } from '../api';
+import { editOrder, getAllProducts, addOrder } from '../api';
 import Modal from '@material-ui/core/Modal';
 import Backdrop from '@material-ui/core/Backdrop';
 import Fade from '@material-ui/core/Fade';
@@ -19,7 +19,7 @@ const useStyles = makeStyles((theme) => ({
         margin: '2%'
       },
       media: {
-        height: 140,
+        height: 250,
       },
     modal: {
       display: 'flex',
@@ -35,7 +35,7 @@ const useStyles = makeStyles((theme) => ({
   }));
 
 
-function Products({products, count, setCount,setProducts}) {
+function Products({products, count, setCount,setProducts, username}) {
 console.log(products)
     const classes = useStyles();
 
@@ -59,17 +59,24 @@ console.log(products)
     setOpen(false);
     };
  
+    function idChecker(id, index) {
+        // console.log(id, index)
+        
+        // if(id === index) {
+            
+        // } 
+    }
 
     return (
         <div>
        
         <div style={{display: 'flex', flexWrap: 'wrap'}}>
         {products.map((product, index) =>  
-        <Card className={classes.root} id={index}>
-               
+        <Card className={classes.root} key={index} id={index} >
                 <CardMedia
                 className={classes.media}
-                image={placeholderimg}
+                image={product.img ? product.img : placeholderimg}
+                
                 />
                 <CardContent>
 
@@ -129,7 +136,7 @@ console.log(products)
                 >
                 <Fade in={open}>
                     <div className={classes.paper}>
-                    <h2 id="transition-modal-title">I think the backdrops are stacking on top of eachother, causing it to be black</h2>
+                    <h2 id="transition-modal-title">{product.reviewtext}</h2>
                     <p id="transition-modal-description">{product.reviewtext}</p> 
                     </div>
                 </Fade>
@@ -141,11 +148,20 @@ console.log(products)
                 
                 style={{backgroundColor:'#26F0F1', color:'black'}}
                 endIcon={<ShoppingCartIcon />}
-                onClick={() => {
+                onClick={async () => {
 
                     setCount(count + 1);
-                    console.log(index, product.id) // I think we need to add id's to the table? Not sure.
-                    // editOrder({id, product.id, quantity})
+                    let newQuantity = product.quantity+1
+                    const productId = product.id
+                    const orderId = null
+                    const price = product.price
+                    const quantity = product.quantity
+                    
+                    // use the helper function to get userId, then pass that to create order
+                    // const orderId = count===1 ? null : localStorage.getItem('orderId')
+                    const order = await addOrder(1, productId, orderId, price, quantity) // this will return a order id, then use that in edit order to change the quantity
+                    console.log(order)
+                    // const editOrders = await  editOrder(userId, productId, newQuantity)
                 }}
                 >
                 Add to Cart

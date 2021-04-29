@@ -1,17 +1,16 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import { Header, Products, Login, Register, OrderHistory } from "../components";
 import "./App.css";
 
 /* Need More specified alerts, like if there is no user registered. 
-   Also need to get the IMGS Renderings
    And the Quantity Working on the Database end
    Make the remove from cart only render on the specified product
    Pop up a modal with all the reviewtexts 
-   Fonts for certain html tags staying default
    change description to only use one line
    Add to Cart will store the OrderId on local storage
    Create Review
+    Edit Quantity on orders Is priority, then figure out the rendering issues
     */
 const App = () => {
   const [products, setProducts] = useState([]);
@@ -78,6 +77,7 @@ const App = () => {
                 setProducts={setProducts}
                 count={count}
                 setCount={setCount}
+                username={username}
               />
             )}
           />
