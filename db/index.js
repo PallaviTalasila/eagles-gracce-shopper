@@ -226,12 +226,14 @@ async function generateorderseq() {
   }
 }
 
-async function createOrder({ userid, productid, orderid, price, quantity }) {
+async function createOrder({ username, productid, orderid, price, quantity }) {
+
+  const user = await getUserByUsername(username);
   const query = `INSERT INTO
       orders(userid, productid,orderid, price, quantity)
       VALUES($1, $2,$3,$4,$5)
       returning *`;
-  const values = [userid, productid, orderid, price, quantity];
+  const values = [user.id, productid, orderid, price, quantity];
 
   try {
     const {
