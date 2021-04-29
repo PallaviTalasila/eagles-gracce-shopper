@@ -1,65 +1,134 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { makeStyles } from '@material-ui/core/styles';
-import Card from '@material-ui/core/Card';
-import CardActionArea from '@material-ui/core/CardActionArea';
-import CardActions from '@material-ui/core/CardActions';
-import CardContent from '@material-ui/core/CardContent';
-import CardMedia from '@material-ui/core/CardMedia';
+import CartItem from './cart/CartItem'
+import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
-import Typography from '@material-ui/core/Typography';
-import ShoppingCartIcon from '@material-ui/icons/ShoppingCart';
+import zIndex from '@material-ui/core/styles/zIndex';
+import { Link } from 'react-router-dom';
+import { editOrder, getOrdersByUser } from '../api';
 
 const useStyles = makeStyles({
   root: {
-    maxWidth: 345,
+    display: 'flex',
+    width: '100% !important',
+    flexWrap: 'wrap',
+    justifyContent: 'center',
   },
   media: {
     height: 140,
   },
+
+  title: {
+    flexBasis: '100%',
+    height: '20vh',
+    backgroundColor: '#0A8754'
+  },
+  checkoutStyle: {
+    // position: "fixed",
+    bottom: 30,
+    right: 30,
+    zIndex: 10,
+  },
+
+  checkoutContainer: {
+    position: "relative",
+    padding: "2rem",
+    display: "flex",
+    justifyContent: "flex-end",
+  }
+
 });
 
-function Cart() {
+const dummyData = [
+  {
+    name: 'Shoes',
+    desc: 'Lorem Ipsum is simply dummy text of the printing and typesetting',
+    price: '$399',
+  },
+  {
+    name: 'Shits',
+    desc: 'Lorem Ipsum is simply dummy text of the printing and typesetting',
+    price: '$399',
+  },
+  {
+    name: 'Shorts',
+    desc: 'Lorem Ipsum is simply dummy text of the printing and typesetting',
+    price: '$399',
+  },
+  {
+    name: 'Bags',
+    desc: 'Lorem Ipsum is simply dummy text of the printing and typesetting',
+    price: '$399',
+  },
 
-    const classes = useStyles();
+  {
+    name: 'Shoes',
+    desc: 'Lorem Ipsum is simply dummy text of the printing and typesetting',
+    price: '$399',
+  },
+  {
+    name: 'Shits',
+    desc: 'Lorem Ipsum is simply dummy text of the printing and typesetting',
+    price: '$399',
+  },
+  {
+    name: 'Shorts',
+    desc: 'Lorem Ipsum is simply dummy text of the printing and typesetting',
+    price: '$399',
+  },
+  {
+    name: 'Bags',
+    desc: 'Lorem Ipsum is simply dummy text of the printing and typesetting',
+    price: '$399',
+  },
+]
+function Cart({ CartData, setCartData, username }) {
+  console.log("🚀 ~ file: Cart.js ~ line 86 ~ Cart ~ username", username)
 
+  const classes = useStyles();
 
-    return (
-        <div>
-        <Card className={classes.root}>
-            <CardActionArea>
-                <CardMedia
-                className={classes.media}
-                image="/static/images/cards/contemplative-reptile.jpg"
-                title="Contemplative Reptile"
-                />
-                <CardContent>
-                <Typography gutterBottom variant="h5" component="h2">
-                Product Name
-                </Typography>
-                <Typography variant="body2" color="textSecondary" component="p">
-                Product Description
-                </Typography>
-                </CardContent>
-            </CardActionArea>
-            
-            <CardActions>
-                <Button size="small" color="primary">
-                Reviews
+  useEffect(() => {
+    try {
+      Promise.all([getOrdersByUser(username)]).then(([data]) => {
+        setCartData(data);
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  }, [username]);
+
+  return (
+    <>
+      <div className={classes.root}>
+        {
+          CartData.map((item, index) => {
+            return (
+              <Grid key={index} xs={12} md={5} lg={5} wrap="wrap-reverse" style={{ margin: '1rem' }}>
+                <CartItem cardData={item} />
+              </Grid>
+            )
+          })
+        }
+      </div>
+      <div className={classes.checkoutContainer}>
+
+        <Link
+          to="/check-out"
+          style={{ textDecoration: "none", color: "#26F0F1" }}
+        >
+          <Button
+            className={classes.checkoutStyle}
+            variant="contained"
+            size="large"
+            color="primary"
+            style={{ backgroundColor: '#26F0F1', color: 'black' }}
+          >
+            Checkout
                 </Button>
-
-                <Button 
-                variant="outlined"
-                size="small" 
-                color="secondary"
-                endIcon={<ShoppingCartIcon />}
-                >
-                Add to Cart
-                </Button>
-            </CardActions>
-
-        </Card>
-        </div>
-    )
+        </Link>
+      </div>
+    </>
+  )
 }
 
 export default Cart

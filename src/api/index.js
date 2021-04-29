@@ -27,8 +27,13 @@ export async function login(username, password) {
 /***********************PRODUCTS******************************/
 
 export async function getAllProducts() {
+
+  if (localStorage.getItem('products')) {
+    return JSON.parse(localStorage.getItem('products'));
+  }
   try {
     const { data } = await axios.get(`/api/products`);
+    localStorage.setItem('products', JSON.stringify(data));
     return data;
   } catch (error) {
     throw error;
@@ -77,8 +82,12 @@ export async function deleteProduct(id) {
 /***********************ORDER/CART******************************/
 
 export async function getOrdersByUser(username) {
+  const allproducts = JSON.parse(localStorage.getItem('products') || []);
   try {
     const { data } = await axios.get(`/api/orders/${username}`);
+    data.map((item) => {
+      item.detail = allproducts.find(i => i.id == item.productid);
+    });
     return data;
   } catch (error) {
     throw error;
