@@ -196,7 +196,7 @@ apiRouter.patch("/orders/:id", async (req, res, next) => {
     const { id } = req.params;
     const { productid, quantity } = req.body;
 
-    const updateOrder = await editOrder({ id, productid, quantity });
+    const updateOrder = await editOrder(id, productid, quantity );
     res.send(updateOrder);
   } catch (error) {
     next(error);
