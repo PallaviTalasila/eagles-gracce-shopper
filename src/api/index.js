@@ -24,6 +24,8 @@ export async function login(username, password) {
   }
 }
 
+
+
 /***********************PRODUCTS******************************/
 
 export async function getAllProducts() {
@@ -85,10 +87,10 @@ export async function getOrdersByUser(username) {
   }
 }
 
-export async function addOrder(userid, productid,orderid, price, quantity) {
+export async function addOrder(username, productid,orderid, price, quantity) {
   try {
     const payload = {
-      userid: userid,
+      username: username,
       productid: productid,
       orderid:orderid,
       price: price,
