@@ -8,7 +8,7 @@ import Button from "@material-ui/core/Button";
 import Typography from "@material-ui/core/Typography";
 import ShoppingCartIcon from "@material-ui/icons/ShoppingCart";
 import placeholderimg from "./imgs/placeholderimg.png";
-import { editOrder, getAllProducts, addOrder } from "../api";
+import { editOrder, editProduct, getAllProducts, addOrder } from "../api";
 import Modal from "@material-ui/core/Modal";
 import Backdrop from "@material-ui/core/Backdrop";
 import Fade from "@material-ui/core/Fade";
@@ -27,7 +27,7 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: "center",
   },
   paper: {
-    backgroundColor: theme.palette.background.paper,
+    backgroundColor: "white",
     border: "2px solid #000",
     boxShadow: theme.shadows[5],
     padding: theme.spacing(2, 4, 3),
@@ -35,6 +35,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const ModalWrapper = ({ classes, handleClose, open, selectedProduct }) => {
+  console.log(selectedProduct)
   return (
     <Modal
       className={classes.modal}
@@ -46,16 +47,20 @@ const ModalWrapper = ({ classes, handleClose, open, selectedProduct }) => {
         timeout: 500,
       }}
     >
-      <Fade in={open}>
-        {selectedProduct ? (
+      <div>
+      <h2 style={{backgroundColor:'white', padding:'2.5%'}}>These are the best shoes I've ever seen!</h2>
+     
+      <h2 style={{backgroundColor:'white', padding:'2.5%'}}>I can run 30 mph now!</h2>
+
+      <h2 style={{backgroundColor:'white', padding:'2.5%'}}>They were only clean for a week...</h2>
+      </div>
+      {/* <Fade in={open}>
+        {selectedProduct ? selectedProduct.reviews.map((review) => (
           <div className={classes.paper}>
-            <h2 id="transition-modal-title">{selectedProduct.reviewtext.map()}</h2>
-            <p id="transition-modal-description">
-              {selectedProduct.reviewtext}
-            </p>
+          <h2 id="transition-modal-title">{review.reviewtext}</h2>
           </div>
-        ) : null}
-      </Fade>
+        )): null}
+      </Fade> */}
     </Modal>
   );
 };
@@ -67,6 +72,7 @@ const ModalWrapper = ({ classes, handleClose, open, selectedProduct }) => {
 function Products({ products, count, setCount, setProducts, username }) {
   const [selectedProduct, setSelectedProduct] = useState(null);
   const userNameKey = localStorage.getItem(`Username`);
+  const [open, setOpen] = useState(false);
 
   const classes = useStyles();
 
@@ -80,9 +86,7 @@ function Products({ products, count, setCount, setProducts, username }) {
     }
   }, []);
 
-  console.log(products)
-
-  const [open, setOpen] = React.useState(false);
+  
 
   const handleOpen = (product) =>
     function () {
@@ -122,6 +126,7 @@ function Products({ products, count, setCount, setProducts, username }) {
       );
     }
   };
+  console.log(products);
 
   return (
     <>
@@ -167,7 +172,7 @@ function Products({ products, count, setCount, setProducts, username }) {
               </CardContent>
 
               <CardActions>
-                <Button
+                {product.reviews.length!==0 ?(<Button
                   size="small"
                   style={{ backgroundColor: "#0A8754", color: "white" }}
                   variant="contained"
@@ -175,7 +180,7 @@ function Products({ products, count, setCount, setProducts, username }) {
                   onClick={handleOpen(product)}
                 >
                   Reviews
-                </Button>
+                </Button>):null}
 
                 <Button
                   variant="outlined"
@@ -186,13 +191,17 @@ function Products({ products, count, setCount, setProducts, username }) {
                 >
                   Add to Cart
                 </Button>
-
               </CardActions>
             </Card>
           ))}
         </div>
       </div>
-      <ModalWrapper classes={classes} handleClose={handleClose} open={open} selectedProduct={selectedProduct} />
+      <ModalWrapper
+        classes={classes}
+        handleClose={handleClose}
+        open={open}
+        selectedProduct={selectedProduct}
+      />
     </>
   );
 }
