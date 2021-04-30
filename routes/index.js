@@ -21,6 +21,7 @@ const {
   getUserByUsername,
   getUser,
   generateorderseq,
+  getOrdersByOrderId,
 } = require("../db");
 
 apiRouter.get("/", (req, res, next) => {
@@ -159,27 +160,41 @@ apiRouter.get("/orders/:username", async (req, res, next) => {
   }
 });
 
+apiRouter.get("/orders/:orderid/cart", async (req, res, next) => {
+  try {
+    const { orderid } = req.params;
+    const ordersById = await getOrdersByOrderId(orderid);
+    res.send(ordersById);
+  } catch (error) {
+    console.log(error);
+    next(error);
+  }
+});
+
 apiRouter.post("/orders", async (req, res, next) => {
   try {
-    const { userid, productid, orderid, price, quantity } = req.body;
+    const { userid, productid, orderid, price, quantity, username } = req.body;
 
-    if (orderid) {
+    if (orderid !== null) {
       const postOrder = await createOrder({
         userid,
         productid,
         orderid,
         price,
         quantity,
+        username,
       });
       res.send(postOrder);
     } else {
-      const genorderid = await generateorderseq();
+      const orderid = await generateorderseq();
+
       const postOrder = await createOrder({
         userid,
         productid,
-        genorderid,
+        orderid,
         price,
         quantity,
+        username,
       });
       res.send(postOrder);
     }
@@ -193,7 +208,7 @@ apiRouter.patch("/orders/:id", async (req, res, next) => {
     const { id } = req.params;
     const { productid, quantity } = req.body;
 
-    const updateOrder = await editOrder({ id, productid, quantity });
+    const updateOrder = await editOrder(id, productid, quantity);
     res.send(updateOrder);
   } catch (error) {
     next(error);

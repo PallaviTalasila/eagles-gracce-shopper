@@ -10,6 +10,7 @@ import { Link, useHistory } from "react-router-dom";
 import IconButton from "@material-ui/core/IconButton";
 import ExitToAppIcon from "@material-ui/icons/ExitToApp";
 import Badge from "@material-ui/core/Badge";
+import WorkIcon from '@material-ui/icons/Work';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -35,9 +36,11 @@ function Header({ setUsername, setPassword, loggedIn, setLoggedIn ,count}) {
     event.preventDefault();
     localStorage.removeItem(`Token`);
     localStorage.removeItem(`Username`);
+    localStorage.clear();
     setLoggedIn(false);
     setUsername("");
     setPassword("");
+    
     history.push("/products");
   };
 
@@ -63,7 +66,7 @@ function Header({ setUsername, setPassword, loggedIn, setLoggedIn ,count}) {
 
           <Link
             to="/products"
-            style={{ textDecoration: "none", color: "#26F0F1" }}
+            style={{ textDecoration: "none", color: "#26F0F1", marginRight:'1%' }}
           >
             <Button color="inherit" endIcon={<StorefrontIcon />}>
               Products
@@ -76,7 +79,7 @@ function Header({ setUsername, setPassword, loggedIn, setLoggedIn ,count}) {
               style={{ textDecoration: "none", color: "#26F0F1" }}
               to="/myOrders"
             >
-              <Button color="inherit">My Orders</Button>
+              <Button color="inherit" endIcon={<WorkIcon />}>My Orders</Button>
             </Link>
           )}
 

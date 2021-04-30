@@ -2,6 +2,7 @@
 const { Client } = require("pg");
 const DB_NAME = "grace-shopper";
 const bcrypt = require("bcrypt");
+const { ContactsOutlined } = require("@material-ui/icons");
 //const DB_URL =   process.env.DATABASE_URL || `postgres://localhost:5432/${DB_NAME}`;
 //for heroku1
 const client = new Client({
@@ -35,26 +36,25 @@ async function createProduct({ title, description, price, quantity, img }) {
 }
 
 async function getAllProducts() {
-  const query = `WITH P AS
-  (SELECT *
-    FROM PRODUCTS),
-R AS
-  (SELECT *
-    FROM REVIEWS)
-SELECT P.TITLE,
-P.DESCRIPTION,
-P.PRICE,
-P.ID,
-P.QUANTITY,
-P.IMG,
-R.REVIEWTEXT
-FROM P
-LEFT JOIN R ON (P.ID = R.PRODUCTID);`;
+  const query = `SELECT * FROM PRODUCTS;`;
 
   try {
-    const { rows } = await client.query(query);
+    const { rows: products } = await client.query(query);
+    const productids = products.map((product) => product.id).join(",");
 
-    return rows;
+    const { rows: reviews } = await client.query(
+      `select userid,productid,reviewtext from reviews  where reviews.productid in (${productids})`
+    );
+
+    const myproducts = await Promise.all(
+      products.map(async (product) => {
+        product.reviews = [];
+        if (reviews) product.reviews = reviews;
+        return product;
+      })
+    );
+
+    return myproducts;
   } catch (error) {
     throw error;
   }
@@ -218,26 +218,43 @@ async function generateorderseq() {
   const query = `select nextval('order_id_seq')`;
   try {
     const {
-      rows: orderid,
+      rows: [orderid],
     } = await client.query(query);
-    return orderid;
+    return orderid.nextval;
   } catch (error) {
     throw error;
   }
 }
 
-async function createOrder({ userid, productid, orderid, price, quantity }) {
-  const query = `INSERT INTO
-      orders(userid, productid,orderid, price, quantity)
-      VALUES($1, $2,$3,$4,$5)
-      returning *`;
-  const values = [userid, productid, orderid, price, quantity];
-
+async function createOrder({
+  userid,
+  productid,
+  orderid,
+  price,
+  quantity,
+  username,
+}) {
   try {
-    const {
-      rows: [order],
-    } = await client.query(query, values);
-    return order;
+    const query = `INSERT INTO
+    orders(userid, productid,orderid, price, quantity)
+    VALUES($1, $2,$3,$4,$5)
+    returning *`;
+
+    if (userid) {
+      const values = [userid, productid, orderid, price, quantity];
+      const {
+        rows: [order],
+      } = await client.query(query, values);
+      return order;
+    } else if (username) {
+      const user = await getUserByUsername(username);
+      const values = [user.id, productid, orderid, price, quantity];
+
+      const {
+        rows: [order],
+      } = await client.query(query, values);
+      return order;
+    }
   } catch (error) {
     throw error;
   }
@@ -248,8 +265,35 @@ async function getOrdersByUser(userid) {
   const values = [userid];
 
   try {
-    const { rows: order } = await client.query(query, values);
-    return order;
+    const { rows: orders } = await client.query(query, values);
+    const productids = orders.map((order) => order.productid).join(",");
+
+    const { rows: orderedProducts } = await client.query(
+      `select p.title,p.description,p.price,p.img from products p where p.id in (${productids})`
+    );
+
+    const myOrders = await Promise.all(
+      orders.map(async (order) => {
+        order.products = [];
+        if (orderedProducts) order.products = orderedProducts;
+        return order;
+      })
+    );
+
+    return myOrders;
+  } catch (error) {
+    throw error;
+  }
+}
+
+async function getOrdersByOrderId(orderid) {
+  const query = `select o.*,p.img,p.description,p.title from orders o, products p where o.productid = p.id and orderid=$1`;
+  const values = [orderid];
+
+  try {
+    const { rows: orders } = await client.query(query, values);
+
+    return orders;
   } catch (error) {
     throw error;
   }
@@ -267,7 +311,7 @@ async function editOrder(id, productid, quantity) {
             SET quantity =$3
             WHERE id=$1
             and productid=$2
-            RETURNING *;
+            RETURNING quantity,id,productid;
         `,
       [id, productid, quantity]
     );
@@ -305,7 +349,7 @@ async function deleteOrder(id, productid) {
 async function createReview({ userid, productid, reviewtext }) {
   const query = `INSERT INTO
       reviews(userid, productid, reviewtext)
-      VALUES($1, $2,$3)
+      VALUES($1,$2,$3)
       returning *`;
   const values = [userid, productid, reviewtext];
 
@@ -334,5 +378,6 @@ module.exports = {
   getOrdersByUser,
   getUserByUsername,
   getUser,
-  generateorderseq
+  generateorderseq,
+  getOrdersByOrderId,
 };

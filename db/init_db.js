@@ -124,7 +124,7 @@ async function populateInitialData() {
         description: "Indestructable",
         price: 15,
         quantity: 30,
-        img: "https://cdn.shopify.com/s/files/1/2239/9823/products/swig-life-signature-20oz-bottle-seaglass.jpg?v=1583422828",
+        img: "https://static8.depositphotos.com/1015682/896/i/600/depositphotos_8965353-stock-photo-bottle-water-and-splash.jpg",
       },
     ];
 

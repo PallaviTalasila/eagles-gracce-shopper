@@ -4,4 +4,18 @@
 *{
   margin: 0;
   font-family: 'Abel', sans-serif;
+  
+}
+/* 
+
+https://images.unsplash.com/photo-1531265726475-52ad60219627?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1368&q=80 
+
+https://images.unsplash.com/photo-1619271121705-61b5c3faaae9?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=564&q=80*/
+
+
+.app {
+  background-image: url("https://images.unsplash.com/photo-1531265726475-52ad60219627?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1368&q=80");
+  
+  height: 100%;
+  width: 100%;
 }

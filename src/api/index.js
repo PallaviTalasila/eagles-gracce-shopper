@@ -1,31 +1,24 @@
 import axios from "axios";
 /***********************USER FUNCTIONS*******************/
-
 export async function register(username, password, email) {
   try {
     const payload = { username: username, password: password, email: email };
-
     const { data } = await axios.post(`/api/register`, payload);
     return data;
   } catch (error) {
     throw error;
   }
 }
-
 export async function login(username, password) {
   try {
     const payload = { username: username, password: password };
-
     const { data } = await axios.post(`/api/login`, payload);
-
     return data;
   } catch (error) {
     throw error;
   }
 }
-
 /***********************PRODUCTS******************************/
-
 export async function getAllProducts() {
   try {
     const { data } = await axios.get(`/api/products`);
@@ -34,7 +27,6 @@ export async function getAllProducts() {
     throw error;
   }
 }
-
 export async function addProduct(title, description, price, quantity) {
   try {
     const payload = {
@@ -49,7 +41,6 @@ export async function addProduct(title, description, price, quantity) {
     throw error;
   }
 }
-
 export async function editProduct(id, title, description, price, quantity) {
   try {
     const payload = {
@@ -64,7 +55,6 @@ export async function editProduct(id, title, description, price, quantity) {
     throw error;
   }
 }
-
 export async function deleteProduct(id) {
   try {
     const { data } = await axios.delete(`/api/products/${id}`);
@@ -73,9 +63,7 @@ export async function deleteProduct(id) {
     throw error;
   }
 }
-
 /***********************ORDER/CART******************************/
-
 export async function getOrdersByUser(username) {
   try {
     const { data } = await axios.get(`/api/orders/${username}`);
@@ -85,14 +73,30 @@ export async function getOrdersByUser(username) {
   }
 }
 
-export async function addOrder(userid, productid,orderid, price, quantity) {
+export async function getOrdersById(orderid) {
+  try {
+    const { data } = await axios.get(`/api/orders/${orderid}/cart`);
+    return data;
+  } catch (error) {
+    throw error;
+  }
+}
+export async function addOrder(
+  userid,
+  productid,
+  orderid,
+  price,
+  quantity,
+  username
+) {
   try {
     const payload = {
       userid: userid,
       productid: productid,
-      orderid:orderid,
+      orderid: orderid,
       price: price,
       quantity: quantity,
+      username: username,
     };
     const { data } = await axios.post(`/api/orders`, payload);
     return data;
@@ -100,7 +104,6 @@ export async function addOrder(userid, productid,orderid, price, quantity) {
     throw error;
   }
 }
-
 export async function editOrder(id, productid, quantity) {
   try {
     const payload = { productid: productid, quantity: quantity };
@@ -110,7 +113,6 @@ export async function editOrder(id, productid, quantity) {
     throw error;
   }
 }
-
 export async function deleteOrder(id, productid) {
   try {
     const payload = { productid: productid };
