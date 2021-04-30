@@ -49,7 +49,7 @@ const ModalWrapper = ({ classes, handleClose, open, selectedProduct }) => {
       <Fade in={open}>
         {selectedProduct ? (
           <div className={classes.paper}>
-            <h2 id="transition-modal-title">{selectedProduct.reviewtext}</h2>
+            <h2 id="transition-modal-title">{selectedProduct.reviewtext.map()}</h2>
             <p id="transition-modal-description">
               {selectedProduct.reviewtext}
             </p>
@@ -79,6 +79,8 @@ function Products({ products, count, setCount, setProducts, username }) {
       console.log(error);
     }
   }, []);
+
+  console.log(products)
 
   const [open, setOpen] = React.useState(false);
 
