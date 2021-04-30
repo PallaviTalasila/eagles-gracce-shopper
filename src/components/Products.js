@@ -34,7 +34,38 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+const ModalWrapper = ({ classes, handleClose, open, selectedProduct }) => {
+  return (
+    <Modal
+      className={classes.modal}
+      open={open}
+      onClose={handleClose}
+      closeAfterTransition
+      BackdropComponent={Backdrop}
+      BackdropProps={{
+        timeout: 500,
+      }}
+    >
+      <Fade in={open}>
+        {selectedProduct ? (
+          <div className={classes.paper}>
+            <h2 id="transition-modal-title">{selectedProduct.reviewtext}</h2>
+            <p id="transition-modal-description">
+              {selectedProduct.reviewtext}
+            </p>
+          </div>
+        ) : null}
+      </Fade>
+    </Modal>
+  );
+};
+
+/**
+ * Either attach count to each product or you would need to keep
+ * track of the products that are currently in the cart
+ */
 function Products({ products, count, setCount, setProducts, username }) {
+  const [selectedProduct, setSelectedProduct] = useState(null);
   const userNameKey = localStorage.getItem(`Username`);
   const [open, setOpen] = useState(false);
 
@@ -50,9 +81,13 @@ function Products({ products, count, setCount, setProducts, username }) {
     }
   }, []);
 
-  const handleOpen = () => {
-    setOpen(true);
-  };
+  const [open, setOpen] = React.useState(false);
+
+  const handleOpen = (product) =>
+    function () {
+      setSelectedProduct(product);
+      setOpen(true);
+    };
 
   const handleClose = () => {
     setOpen(false);
@@ -61,10 +96,8 @@ function Products({ products, count, setCount, setProducts, username }) {
   const addToCart = async (product) => {
     setCount(count + 1);
     let newQuantity = product.quantity - 1;
-    console.log(product);
-    console.log("count:", count);
 
-    if (count === 0) {
+    if (count === 1) {
       const order = await addOrder(
         null,
         product.id,
@@ -73,143 +106,93 @@ function Products({ products, count, setCount, setProducts, username }) {
         product.quantity,
         userNameKey
       );
+      await editOrder(order.orderid, product.productid, newQuantity);
       localStorage.setItem("orderid", order.orderid);
-
-      //await editOrder(order.orderid, product.id, newQuantity);
-      await editProduct(product.is, null, null, null, newQuantity);
-
-      try {
-        Promise.all([getAllProducts()]).then(([data]) => {
-          setProducts(data);
-        });
-      } catch (error) {
-        console.log(error);
-      }
     } else {
-      try {
-        Promise.all([getAllProducts()]).then(([data]) => {
-          setProducts(data);
-        });
-      } catch (error) {
-        console.log(error);
-      }
-
-      let newQuantity = product.quantity - 1;
-      //await editOrder(localStorage.getItem("orderid"), product.id, newQuantity);
-      await addOrder(
-        null,
-        product.id,
-        localStorage.getItem("orderid"),
-        product.price,
-        product.quantity,
-        userNameKey
+      const newProducts = await getAllProducts();
+      const quantityRender = newProducts.filter(
+        (newProduct) => product.productid === newProduct.id
       );
-      await editProduct(product.id, null, null, null, newQuantity);
+      let newQuantity = quantityRender.quantity - 1;
+      await editOrder(
+        localStorage.getItem("orderid"),
+        product.productid,
+        newQuantity
+      );
     }
   };
 
   return (
-    <div>
-      <div style={{ display: "flex", flexWrap: "wrap" }}>
-        {products.map((product, index) => (
-          <Card className={classes.root} key={index} id={index}>
-            <CardMedia
-              className={classes.media}
-              image={product.img ? product.img : placeholderimg}
-            />
-            <CardContent>
-              <Typography gutterBottom variant="h5" component="h2">
-                {product.title}
-              </Typography>
+    <>
+      <div>
+        <div style={{ display: "flex", flexWrap: "wrap" }}>
+          {products.map((product, index) => (
+            <Card className={classes.root} key={index} id={index}>
+              <CardMedia
+                className={classes.media}
+                image={product.img ? product.img : placeholderimg}
+              />
+              <CardContent>
+                <Typography gutterBottom variant="h5" component="h2">
+                  {product.title}
+                </Typography>
 
-              <Typography
-                variant="body2"
-                color="textSecondary"
-                variant="h5"
-                component="h5"
-              >
-                {product.description}
-              </Typography>
-
-              <Typography
-                variant="body2"
-                color="textPrimary"
-                variant="h5"
-                component="h5"
-              >
-                ${product.price}
-              </Typography>
-
-              <Typography
-                variant="body2"
-                color="textPrimary"
-                variant="h6"
-                component="h6"
-              >
-                Quantity : {product.quantity}
-              </Typography>
-            </CardContent>
-
-            <CardActions>
-              <Button
-                size="small"
-                style={{ backgroundColor: "#0A8754", color: "white" }}
-                variant="contained"
-                type="button"
-                onClick={handleOpen}
-              >
-                Reviews
-              </Button>
-
-              <Modal
-                className={classes.modal}
-                open={open}
-                onClose={handleClose}
-                closeAfterTransition
-                BackdropComponent={Backdrop}
-                BackdropProps={{
-                  timeout: 500,
-                }}
-              >
-                <Fade in={open}>
-                  <div className={classes.paper}>
-                    <h2 id="transition-modal-title">{product.reviewtext}</h2>
-                    <p id="transition-modal-description">
-                      {product.reviewtext}
-                    </p>
-                  </div>
-                </Fade>
-              </Modal>
-
-              <Button
-                variant="outlined"
-                size="small"
-                style={{ backgroundColor: "#26F0F1", color: "black" }}
-                endIcon={<ShoppingCartIcon />}
-                onClick={() => addToCart(product)}
-              >
-                Add to Cart
-              </Button>
-
-              {count > 0 ? (
-                <Button
-                  variant="contained"
-                  size="small"
-                  color="secondary"
-                  endIcon={<ShoppingCartIcon />}
-                  onClick={() => {
-                    setCount(count - 1);
-                    // editOrder({id, product.id, quantity})
-                  }}
+                <Typography
+                  variant="body2"
+                  color="textSecondary"
+                  variant="h5"
+                  component="h5"
                 >
-                  Remove from Cart
+                  {product.description}
+                </Typography>
+
+                <Typography
+                  variant="body2"
+                  color="textPrimary"
+                  variant="h5"
+                  component="h5"
+                >
+                  ${product.price}
+                </Typography>
+
+                <Typography
+                  variant="body2"
+                  color="textPrimary"
+                  variant="h6"
+                  component="h6"
+                >
+                  Quantity : {product.quantity}
+                </Typography>
+              </CardContent>
+
+              <CardActions>
+                <Button
+                  size="small"
+                  style={{ backgroundColor: "#0A8754", color: "white" }}
+                  variant="contained"
+                  type="button"
+                  onClick={handleOpen(product)}
+                >
+                  Reviews
                 </Button>
-              ) : null}
-            </CardActions>
-          </Card>
-        ))}
+
+                <Button
+                  variant="outlined"
+                  size="small"
+                  style={{ backgroundColor: "#26F0F1", color: "black" }}
+                  endIcon={<ShoppingCartIcon />}
+                  onClick={() => addToCart(product)}
+                >
+                  Add to Cart
+                </Button>
+
+              </CardActions>
+            </Card>
+          ))}
+        </div>
       </div>
-    </div>
+      <ModalWrapper classes={classes} handleClose={handleClose} open={open} selectedProduct={selectedProduct} />
+    </>
   );
 }
 // ********************************** ADD A NOTIFICATION TO THE CART ICON **************************//
