@@ -2,6 +2,7 @@
 const { Client } = require("pg");
 const DB_NAME = "grace-shopper";
 const bcrypt = require("bcrypt");
+const { ContactsOutlined } = require("@material-ui/icons");
 //const DB_URL =   process.env.DATABASE_URL || `postgres://localhost:5432/${DB_NAME}`;
 //for heroku1
 const client = new Client({
@@ -285,6 +286,19 @@ async function getOrdersByUser(userid) {
   }
 }
 
+async function getOrdersByOrderId(orderid) {
+  const query = `select o.*,p.img,p.description,p.title from orders o, products p where o.productid = p.id and orderid=$1`;
+  const values = [orderid];
+
+  try {
+    const { rows: orders } = await client.query(query, values);
+
+    return orders;
+  } catch (error) {
+    throw error;
+  }
+}
+
 async function editOrder(id, productid, quantity) {
   try {
     /*Update Quantity on the order/cart*/
@@ -365,4 +379,5 @@ module.exports = {
   getUserByUsername,
   getUser,
   generateorderseq,
+  getOrdersByOrderId,
 };

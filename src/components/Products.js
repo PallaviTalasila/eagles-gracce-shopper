@@ -8,7 +8,7 @@ import Button from "@material-ui/core/Button";
 import Typography from "@material-ui/core/Typography";
 import ShoppingCartIcon from "@material-ui/icons/ShoppingCart";
 import placeholderimg from "./imgs/placeholderimg.png";
-import { editOrder, getAllProducts, addOrder } from "../api";
+import { editOrder, editProduct, getAllProducts, addOrder } from "../api";
 import Modal from "@material-ui/core/Modal";
 import Backdrop from "@material-ui/core/Backdrop";
 import Fade from "@material-ui/core/Fade";
@@ -77,8 +77,7 @@ function Products({ products, count, setCount, setProducts, username }) {
 
       //await editOrder(order.orderid, product.id, newQuantity);
       await editProduct(product.is, null, null, null, newQuantity);
-    
-      
+
       try {
         Promise.all([getAllProducts()]).then(([data]) => {
           setProducts(data);
@@ -109,7 +108,6 @@ function Products({ products, count, setCount, setProducts, username }) {
     }
   };
 
-  console.log(products);
   return (
     <div>
       <div style={{ display: "flex", flexWrap: "wrap" }}>
