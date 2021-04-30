@@ -101,22 +101,40 @@ function Products({ products, count, setCount, setProducts, username }) {
         product.id,
         null,
         product.price,
-        product.quantity,
+        count,
         userNameKey
       );
-      await editOrder(order.orderid, product.productid, newQuantity);
       localStorage.setItem("orderid", order.orderid);
+
+      await editProduct(product.id, null, null, null, newQuantity);
+
+      try {
+        Promise.all([getAllProducts()]).then(([data]) => {
+          setProducts(data);
+        });
+      } catch (error) {
+        console.log(error);
+      }
     } else {
-      const newProducts = await getAllProducts();
-      const quantityRender = newProducts.filter(
-        (newProduct) => product.productid === newProduct.id
-      );
-      let newQuantity = quantityRender.quantity - 1;
-      await editOrder(
+      const order = await addOrder(
+        null,
+        product.id,
         localStorage.getItem("orderid"),
-        product.productid,
-        newQuantity
+        product.price,
+        count,
+        userNameKey
       );
+      try {
+        Promise.all([getAllProducts()]).then(([data]) => {
+          setProducts(data);
+        });
+      } catch (error) {
+        console.log(error);
+      }
+
+      let newQuantity = product.quantity - 1;
+
+      await editProduct(product.id, null, null, null, newQuantity);
     }
   };
   console.log(products);
@@ -165,15 +183,17 @@ function Products({ products, count, setCount, setProducts, username }) {
               </CardContent>
 
               <CardActions>
-                {product.reviews.length!==0 ?(<Button
-                  size="small"
-                  style={{ backgroundColor: "#0A8754", color: "white" }}
-                  variant="contained"
-                  type="button"
-                  onClick={handleOpen(product)}
-                >
-                  Reviews
-                </Button>):null}
+                {product.reviews.length !== 0 ? (
+                  <Button
+                    size="small"
+                    style={{ backgroundColor: "#0A8754", color: "white" }}
+                    variant="contained"
+                    type="button"
+                    onClick={handleOpen(product)}
+                  >
+                    Reviews
+                  </Button>
+                ) : null}
 
                 <Button
                   variant="outlined"

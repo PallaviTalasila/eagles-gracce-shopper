@@ -10,7 +10,7 @@ import { Link, useHistory } from "react-router-dom";
 import IconButton from "@material-ui/core/IconButton";
 import ExitToAppIcon from "@material-ui/icons/ExitToApp";
 import Badge from "@material-ui/core/Badge";
-import WorkIcon from '@material-ui/icons/Work';
+import WorkIcon from "@material-ui/icons/Work";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -29,18 +29,19 @@ const StyledBadge = withStyles((theme) => ({
   },
 }))(Badge);
 
-function Header({ setUsername, setPassword, loggedIn, setLoggedIn ,count}) {
+function Header({ setUsername, setPassword, loggedIn, setLoggedIn, count }) {
   const history = useHistory();
   const classes = useStyles();
   const handleClick = (event) => {
     event.preventDefault();
     localStorage.removeItem(`Token`);
     localStorage.removeItem(`Username`);
-    localStorage.clear();
+    localStorage.removeItem(`orderid`);
+
     setLoggedIn(false);
     setUsername("");
     setPassword("");
-    
+
     history.push("/products");
   };
 
@@ -66,7 +67,11 @@ function Header({ setUsername, setPassword, loggedIn, setLoggedIn ,count}) {
 
           <Link
             to="/products"
-            style={{ textDecoration: "none", color: "#26F0F1", marginRight:'1%' }}
+            style={{
+              textDecoration: "none",
+              color: "#26F0F1",
+              marginRight: "1%",
+            }}
           >
             <Button color="inherit" endIcon={<StorefrontIcon />}>
               Products
@@ -79,7 +84,9 @@ function Header({ setUsername, setPassword, loggedIn, setLoggedIn ,count}) {
               style={{ textDecoration: "none", color: "#26F0F1" }}
               to="/myOrders"
             >
-              <Button color="inherit" endIcon={<WorkIcon />}>My Orders</Button>
+              <Button color="inherit" endIcon={<WorkIcon />}>
+                My Orders
+              </Button>
             </Link>
           )}
 
