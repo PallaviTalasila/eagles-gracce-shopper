@@ -81,8 +81,6 @@ function Products({ products, count, setCount, setProducts, username }) {
     }
   }, []);
 
-  const [open, setOpen] = React.useState(false);
-
   const handleOpen = (product) =>
     function () {
       setSelectedProduct(product);
@@ -121,6 +119,7 @@ function Products({ products, count, setCount, setProducts, username }) {
       );
     }
   };
+  console.log(products);
 
   return (
     <>
@@ -166,7 +165,7 @@ function Products({ products, count, setCount, setProducts, username }) {
               </CardContent>
 
               <CardActions>
-                <Button
+                {product.reviews.length!==0 ?(<Button
                   size="small"
                   style={{ backgroundColor: "#0A8754", color: "white" }}
                   variant="contained"
@@ -174,7 +173,7 @@ function Products({ products, count, setCount, setProducts, username }) {
                   onClick={handleOpen(product)}
                 >
                   Reviews
-                </Button>
+                </Button>):null}
 
                 <Button
                   variant="outlined"
@@ -185,13 +184,17 @@ function Products({ products, count, setCount, setProducts, username }) {
                 >
                   Add to Cart
                 </Button>
-
               </CardActions>
             </Card>
           ))}
         </div>
       </div>
-      <ModalWrapper classes={classes} handleClose={handleClose} open={open} selectedProduct={selectedProduct} />
+      <ModalWrapper
+        classes={classes}
+        handleClose={handleClose}
+        open={open}
+        selectedProduct={selectedProduct}
+      />
     </>
   );
 }
