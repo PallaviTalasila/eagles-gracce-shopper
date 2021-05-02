@@ -27,7 +27,7 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: "center",
   },
   paper: {
-    backgroundColor: theme.palette.background.paper,
+    backgroundColor: "white",
     border: "2px solid #000",
     boxShadow: theme.shadows[5],
     padding: theme.spacing(2, 4, 3),
@@ -35,6 +35,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const ModalWrapper = ({ classes, handleClose, open, selectedProduct }) => {
+  console.log(selectedProduct)
   return (
     <Modal
       className={classes.modal}
@@ -46,16 +47,20 @@ const ModalWrapper = ({ classes, handleClose, open, selectedProduct }) => {
         timeout: 500,
       }}
     >
-      <Fade in={open}>
-        {selectedProduct ? (
+      <div>
+      <h2 style={{backgroundColor:'white', padding:'2.5%'}}>These are the best shoes I've ever seen!</h2>
+     
+      <h2 style={{backgroundColor:'white', padding:'2.5%'}}>I can run 30 mph now!</h2>
+
+      <h2 style={{backgroundColor:'white', padding:'2.5%'}}>They were only clean for a week...</h2>
+      </div>
+      {/* <Fade in={open}>
+        {selectedProduct ? selectedProduct.reviews.map((review) => (
           <div className={classes.paper}>
-            <h2 id="transition-modal-title">{selectedProduct.reviewtext}</h2>
-            <p id="transition-modal-description">
-              {selectedProduct.reviewtext}
-            </p>
+          <h2 id="transition-modal-title">{review.reviewtext}</h2>
           </div>
-        ) : null}
-      </Fade>
+        )): null}
+      </Fade> */}
     </Modal>
   );
 };
@@ -81,6 +86,8 @@ function Products({ products, count, setCount, setProducts, username }) {
     }
   }, []);
 
+  
+
   const handleOpen = (product) =>
     function () {
       setSelectedProduct(product);
@@ -101,22 +108,40 @@ function Products({ products, count, setCount, setProducts, username }) {
         product.id,
         null,
         product.price,
-        product.quantity,
+        count,
         userNameKey
       );
-      await editOrder(order.orderid, product.productid, newQuantity);
       localStorage.setItem("orderid", order.orderid);
+
+      await editProduct(product.id, null, null, null, newQuantity);
+
+      try {
+        Promise.all([getAllProducts()]).then(([data]) => {
+          setProducts(data);
+        });
+      } catch (error) {
+        console.log(error);
+      }
     } else {
-      const newProducts = await getAllProducts();
-      const quantityRender = newProducts.filter(
-        (newProduct) => product.productid === newProduct.id
-      );
-      let newQuantity = quantityRender.quantity - 1;
-      await editOrder(
+      const order = await addOrder(
+        null,
+        product.id,
         localStorage.getItem("orderid"),
-        product.productid,
-        newQuantity
+        product.price,
+        count,
+        userNameKey
       );
+      try {
+        Promise.all([getAllProducts()]).then(([data]) => {
+          setProducts(data);
+        });
+      } catch (error) {
+        console.log(error);
+      }
+
+      let newQuantity = product.quantity - 1;
+
+      await editProduct(product.id, null, null, null, newQuantity);
     }
   };
   console.log(products);
@@ -165,15 +190,17 @@ function Products({ products, count, setCount, setProducts, username }) {
               </CardContent>
 
               <CardActions>
-                {product.reviews.length!==0 ?(<Button
-                  size="small"
-                  style={{ backgroundColor: "#0A8754", color: "white" }}
-                  variant="contained"
-                  type="button"
-                  onClick={handleOpen(product)}
-                >
-                  Reviews
-                </Button>):null}
+                {product.reviews.length !== 0 ? (
+                  <Button
+                    size="small"
+                    style={{ backgroundColor: "#0A8754", color: "white" }}
+                    variant="contained"
+                    type="button"
+                    onClick={handleOpen(product)}
+                  >
+                    Reviews
+                  </Button>
+                ) : null}
 
                 <Button
                   variant="outlined"
