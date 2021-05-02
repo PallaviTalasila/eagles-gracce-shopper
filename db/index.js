@@ -2,7 +2,7 @@
 const { Client } = require("pg");
 const DB_NAME = "grace-shopper";
 const bcrypt = require("bcrypt");
-const { ContactsOutlined } = require("@material-ui/icons");
+
 //const DB_URL =   process.env.DATABASE_URL || `postgres://localhost:5432/${DB_NAME}`;
 //for heroku1
 const client = new Client({

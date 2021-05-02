@@ -24,11 +24,11 @@ const {
   getOrdersByOrderId,
 } = require("../db");
 
-apiRouter.get("/", (req, res, next) => {
-  res.send({
-    message: "API is under construction!",
-  });
-});
+// apiRouter.get("/", (req, res, next) => {
+//   res.send({
+//     message: "API is under construction!",
+//   });
+// });
 
 /************************* USER ROUTES **********************************/
 
